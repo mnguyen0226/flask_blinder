@@ -1,5 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}User Page{% endblock %}
+
+{% block content %}
+
 <h1>
-    {% for name in user_name %}
-        <p>Hello, {{name}}</p>
-    {% endfor %}
+    Welcome, {{name}}
 </h1>
+
+{% endblock %}

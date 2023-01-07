@@ -10,10 +10,9 @@ def index():
     return render_template("index.html")
 
 # user page
-@app.route("/user/")
-def user():
-    name_list = ["Minh", "Tam", "Alex"]
-    return render_template("user.html", user_name=name_list)
+@app.route("/user/<name>")
+def user(name):
+    return render_template("user.html", name=name)
 
 # invalid url page
 @app.errorhandler(404)
