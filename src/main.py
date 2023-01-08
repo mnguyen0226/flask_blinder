@@ -7,6 +7,7 @@ from wtforms import SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import request
 
 # create a flask project
 app = Flask(__name__)
@@ -120,6 +121,37 @@ def add_user():
     our_users = Users.query.order_by(Users.date_added)
 
     return render_template("add_user.html", form=form, name=name, our_users=our_users)
+
+
+# update database record
+@app.route("/update/<int:id>", methods=["GET", "POST"])
+def update(id):
+    form = UserForm()
+
+    # try to find the user info from database
+    name_to_update = Users.query.get_or_404(id)
+
+    # if the user fill out the form and send the information back to us
+    if request.method == "POST":
+        name_to_update.name = request.form["name"]
+        name_to_update.email = request.form["email"]
+
+        # if the infromation is update successfully, we return back to the users register page
+        try:
+            db.session.commit()
+            flash(" updated Successfully!")
+            return render_template(
+                "update.html", form=form, name_to_update=name_to_update
+            )
+        # if we can't then stay at the same page and try again
+        except:
+            flash("Error: Can't update. Try again!")
+            return render_template(
+                "update.html", form=form, name_to_update=name_to_update
+            )
+    # if they just go (or refresh), then just render the curretn page
+    else:
+        return render_template("update.html", form=form, name_to_update=name_to_update)
 
 
 if __name__ == "__main__":

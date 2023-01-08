@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Form Page{% endblock %}
+{% block title %}Update Form Page{% endblock %}
 
 {% block content %} 
     <div>Note: Page allow multiple user to insert info in form.</div>
@@ -10,7 +10,7 @@
     <div>    
     {% for message in get_flashed_messages() %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Hey {{name}}, {{message}}</strong>
+            <strong>Hey, {{name_to_update.name}}{{message}}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -24,18 +24,18 @@
 
     {% else %}
 
-    <h1>User Registers</h1>
+    <h1>Updated User Registers</h1>
     <br/>
 
-    <form method="POST">
+    <form action="/update/{{ name_to_update.id }}" method="POST">
         {{form.hidden_tag()}}
 
         {{form.name.label(class="form-label")}}
-        {{form.name(class="form-control")}}
+        {{form.name(class="form-control", value=name_to_update.name)}}
         </br>
         
         {{form.email.label(class="form-label")}}
-        {{form.email(class="form-control")}}
+        {{form.email(class="form-control", value=name_to_update.email)}}
         </br>
 
         {{form.submit(class="btn btn-secondary")}}
@@ -45,18 +45,14 @@
     </div>
 
     <br/><br/><br/>
-    <h3>Registered User List</h3>
+    <h3>Current Users Info</h3>
 
     <table class="table table-hover table-bordered table-striped" style="text-align: center">
-
-    {% for our_user in our_users %}
-        <tr>  
-            <td>
-                {{our_user.id}}. <a href="{{url_for('update', id=our_user.id)}}">{{our_user.name}}</a> - {{our_user.email}}
-            </td>
-        </tr>
-    {% endfor %}
-
+    <tr>  
+        <td>
+            {{name_to_update.id}}. {{name_to_update.name}} - {{name_to_update.email}}
+        </td>
+    </tr>
     </table>
 
 {% endblock %}
