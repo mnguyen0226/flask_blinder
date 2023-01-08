@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Form Page{% endblock %}
+
+{% block content %} 
+    <div>Note: Page allow multiple user to insert info in form.</div>
+
+    <br/>
+
+    <div>    
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Hey {{name}}, {{message}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    </div>
+
+    <div class="shadow p-3 mb-5 bg-white rounded">
+    <h1>User Registers</h1>
+    <br/>
+
+    <form method="POST">
+        {{form.hidden_tag()}}
+
+        {{form.name.label(class="form-label")}}
+        {{form.name(class="form-control")}}
+        </br>
+        
+        {{form.email.label(class="form-label")}}
+        {{form.email(class="form-control")}}
+        </br>
+
+        {{form.submit(class="btn btn-secondary")}}
+    </form>
+
+    </div>
+
+    <br/><br/><br/>
+    <h3>Registered User List</h3>
+
+    <table class="table table-hover table-bordered table-striped" style="text-align: center">
+
+    {% for our_user in our_users %}
+        <tr>  
+            <td>
+                {{our_user.id}}. {{our_user.name}} - {{our_user.email}}
+            </td>
+        </tr>
+    {% endfor %}
+
+    </table>
+
+{% endblock %}
