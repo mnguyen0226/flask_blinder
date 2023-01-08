@@ -20,6 +20,16 @@
 
     {% if name %}
         <h1>Hello {{name}}</h1>
+
+        <br/>
+        <img src="{{url_for('static', filename='images/cat.jpg')}}">
+        <br/>
+
+        <p id="demo">This is stuff...</p>
+        
+    <!-- JS script replace the id on paragraph above -->
+    <script src="{{url_for('static', filename='js/myfile.js')}}"></script>
+
     {% else %}
         <br/>
         <form method="POST">
