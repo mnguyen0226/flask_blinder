@@ -12,7 +12,13 @@ from datetime import datetime
 app = Flask(__name__)
 
 # init database as sqlite
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+
+# init database as mysql
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://username:password@localhost/db_name"
+app.config[
+    "SQLALCHEMY_DATABASE_URI"
+] = "mysql+pymysql://root:password123@localhost/our_users"
 
 # init secret key
 app.config["SECRET_KEY"] = "secret key"
@@ -117,5 +123,5 @@ def add_user():
 
 
 if __name__ == "__main__":
-    db.create_all()
+    db.create_all()  # sqlite or mysql
     app.run(debug=True)
