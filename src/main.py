@@ -36,7 +36,9 @@ app.app_context().push()
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(200), nullable=False, unique=True)
+    email = db.Column(
+        db.String(200), nullable=False, unique=True
+    )  # if not, will not be added to the database
     fav_color = db.Column(db.String(120), nullable=True)
     date_added = db.Column(
         db.DateTime, default=datetime.utcnow
@@ -106,32 +108,49 @@ def add_user():
     name = None
     form = UserForm()
 
-    # if form is submit and valid (unique as ourssting)
-    if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
+    # POST request
+    if request.method == "POST":
+        # if form is submit and valid (unique as ourssting)
+        if form.validate_on_submit():
+            user = Users.query.filter_by(email=form.email.data).first()
 
-        # if there is not a user (based on unique values then you can create a new user)
-        if user is None:
-            new_user = Users(
-                name=form.name.data,
-                email=form.email.data,
-                fav_color=form.fav_color.data,
-            )
-            db.session.add(new_user)
-            db.session.commit()
+            # if there is not a user (based on unique values then you can create a new user)
+            if user is None:
+                new_user = Users(
+                    name=form.name.data,
+                    email=form.email.data,
+                    fav_color=form.fav_color.data,
+                )
+                db.session.add(new_user)
+                db.session.commit()
 
-        # get name from form
-        name = form.name.data
+                # get name from form
+                name = form.name.data
 
-        # reset info
-        form.name.data = ""
-        form.email.data = ""
-        form.fav_color.data = ""
+            else:
+                flash(
+                    "Error: This email has been taken, not added to database. Please choose another email"
+                )
 
-    # get users ordered by date
-    our_users = Users.query.order_by(Users.date_added)
+            # reset info
+            form.name.data = ""
+            form.email.data = ""
+            form.fav_color.data = ""
 
-    return render_template("add_user.html", form=form, name=name, our_users=our_users)
+        # get users ordered by date
+        our_users = Users.query.order_by(Users.date_added)
+
+        return render_template(
+            "add_user.html", form=form, name=name, our_users=our_users
+        )
+
+    # GET request
+    else:
+        our_users = Users.query.order_by(Users.date_added)
+
+        return render_template(
+            "add_user.html", form=form, name=name, our_users=our_users
+        )
 
 
 # update database record
@@ -142,7 +161,7 @@ def update(id):
     # try to find the user info from database
     name_to_update = Users.query.get_or_404(id)
 
-    # if the user fill out the form and send the information back to us
+    # POST: if the user fill out the form and send the information back to us
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
@@ -161,9 +180,37 @@ def update(id):
             return render_template(
                 "update.html", form=form, name_to_update=name_to_update
             )
-    # if they just go (or refresh), then just render the curretn page
+    # GET: if they just go (or refresh), then just render the curretn page
     else:
         return render_template("update.html", form=form, name_to_update=name_to_update)
+
+
+# delete the record from the database
+# note that for delete, there is no need for post or get as once we click (aka, access the page), we will delete the record, no
+@app.route("/delete/<int:id>")
+def delete(id):
+    user_to_delete = Users.query.get_or_404(id)
+    name = None
+    form = UserForm()
+
+    try:
+        # delete from db
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash("User Deleted Successfully!")
+
+        # get users ordered by date
+        our_users = Users.query.order_by(Users.date_added)
+
+        return render_template(
+            "add_user.html", form=form, name=name, our_users=our_users
+        )
+
+    except:
+        flash("Error: Unable to delete user. Try again.")
+        return render_template(
+            "add_user.html", form=form, name=name, our_users=our_users
+        )
 
 
 if __name__ == "__main__":
