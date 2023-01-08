@@ -6,6 +6,7 @@ from wtforms import StringField
 from wtforms import SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from datetime import datetime
 from flask import request
 
@@ -26,6 +27,9 @@ app.config["SECRET_KEY"] = "secret key"
 
 # create database
 db = SQLAlchemy(app)
+
+# migrate our app with current database (aka, update database)
+migrate = Migrate(app, db)
 app.app_context().push()
 
 # create database model
@@ -33,6 +37,7 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False, unique=True)
+    fav_color = db.Column(db.String(120), nullable=True)
     date_added = db.Column(
         db.DateTime, default=datetime.utcnow
     )  # date that they created, not update tho
@@ -45,6 +50,7 @@ class Users(db.Model):
 class UserForm(FlaskForm):
     name = StringField("Enter Name", validators=[DataRequired()])
     email = StringField("Enter Email", validators=[DataRequired()])
+    fav_color = StringField("Enter Color",)
     submit = SubmitField("Submit")
 
 
@@ -106,7 +112,11 @@ def add_user():
 
         # if there is not a user (based on unique values then you can create a new user)
         if user is None:
-            new_user = Users(name=form.name.data, email=form.email.data)
+            new_user = Users(
+                name=form.name.data,
+                email=form.email.data,
+                fav_color=form.fav_color.data,
+            )
             db.session.add(new_user)
             db.session.commit()
 
@@ -116,6 +126,7 @@ def add_user():
         # reset info
         form.name.data = ""
         form.email.data = ""
+        form.fav_color.data = ""
 
     # get users ordered by date
     our_users = Users.query.order_by(Users.date_added)
@@ -135,6 +146,7 @@ def update(id):
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
+        name_to_update.fav_color = request.form["fav_color"]
 
         # if the infromation is update successfully, we return back to the users register page
         try:

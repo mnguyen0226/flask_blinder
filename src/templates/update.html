@@ -38,6 +38,10 @@
         {{form.email(class="form-control", value=name_to_update.email)}}
         </br>
 
+        {{form.fav_color.label(class="form-label")}}
+        {{form.fav_color(class="form-control", value=name_to_update.fav_color)}}
+        </br>
+
         {{form.submit(class="btn btn-secondary")}}
     </form>
 
@@ -50,7 +54,7 @@
     <table class="table table-hover table-bordered table-striped" style="text-align: center">
     <tr>  
         <td>
-            {{name_to_update.id}}. {{name_to_update.name}} - {{name_to_update.email}}
+            {{name_to_update.id}}. {{name_to_update.name}} - {{name_to_update.email}} - {{name_to_update.fav_color}}
         </td>
     </tr>
     </table>
