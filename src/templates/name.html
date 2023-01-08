@@ -3,6 +3,20 @@
 {% block title %}Enter Name Page{% endblock %}
 
 {% block content %} 
+    <div>Note: Page allow user to insert.</div>
+
+    <br/>
+
+    <div>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Hey {{name}}, {{message}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    </div>
 
     {% if name %}
         <h1>Hello {{name}}</h1>
@@ -12,7 +26,7 @@
             <h1>{{form.hidden_tag()}}</h1>
             {{form.name.label(class="form-label")}}
             {{form.name(class="form-control")}}
-            
+
             </br>
             {{form.submit(class="btn btn-secondary")}}
         </form>

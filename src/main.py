@@ -1,7 +1,9 @@
 from flask import Flask
 from flask import render_template
+from flask import flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField
+from wtforms import SubmitField
 from wtforms.validators import DataRequired
 
 # create a flask project
@@ -38,16 +40,18 @@ def page_not_found(e):
     return render_template("500.html"), 500
 
 
-# input user's name page and show it to another page
+# input user's name page and show it to the current
 @app.route("/name", methods=["GET", "POST"])
 def name():
+    # initialize input variable and form object
     name = None
     form = NamerForm()
 
-    # validate form, if submit then refresh data, also make sure that the user file out the form
+    # if the user (must) fill out the form, then we get the name variable and reset the form
     if form.validate_on_submit():
         name = form.name.data
         form.name.data = ""
+        flash("Form Submitted Successfully!")
 
     return render_template("name.html", name=name, form=form)
 
