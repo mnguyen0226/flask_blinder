@@ -3,8 +3,13 @@ from flask import render_template
 from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField
+from wtforms import PasswordField
+from wtforms import BooleanField
+from wtforms import ValidationError
 from wtforms import SubmitField
 from wtforms.validators import DataRequired
+from wtforms.validators import EqualTo
+from wtforms.validators import Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
@@ -50,6 +55,7 @@ class Users(db.Model):
 
     @property
     def password(self):
+        # this so that when the user try to view the password with "user.password", will get the error message
         raise AttributeError("password is not a readable attribute!")
 
     @password.setter
@@ -69,13 +75,33 @@ class Users(db.Model):
 class UserForm(FlaskForm):
     name = StringField("Enter Name", validators=[DataRequired()])
     email = StringField("Enter Email", validators=[DataRequired()])
-    fav_color = StringField("Enter Color",)
+    fav_color = StringField("Enter Color")
+
+    # need 2 password 1 for enter, 1 for confirm the same typed password
+    password_hash = PasswordField(
+        "Password",
+        validators=[
+            DataRequired(),
+            EqualTo("password_hash2", message="Passwords Must Match!"),
+        ],
+    )
+    password_hash2 = PasswordField(
+        "Confirm Password", validators=[DataRequired()]
+    )  # does not exist in the actual database
+
     submit = SubmitField("Submit")
 
 
 # create a form class for input submission
 class NamerForm(FlaskForm):
     name = StringField("What's Your Name?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+# create a form class to test for password
+class PasswordForm(FlaskForm):
+    email = StringField("What's Your Email?", validators=[DataRequired()])
+    password_hash = PasswordField("What's Your Password?", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 
@@ -133,11 +159,21 @@ def add_user():
 
             # if there is not a user (based on unique values then you can create a new user)
             if user is None:
+
+                # hash password
+                hashed_pw = generate_password_hash(
+                    form.password_hash.data, "sha256"
+                )  # sha256 is the name of algorithm for hashing in cryptography
+
+                # create a new user (row in database)
                 new_user = Users(
                     name=form.name.data,
                     email=form.email.data,
                     fav_color=form.fav_color.data,
+                    password_hash=hashed_pw,
                 )
+
+                # add to database
                 db.session.add(new_user)
                 db.session.commit()
 
@@ -153,6 +189,7 @@ def add_user():
             form.name.data = ""
             form.email.data = ""
             form.fav_color.data = ""
+            form.password_hash.data = ""
 
         # get users ordered by date
         our_users = Users.query.order_by(Users.date_added)
@@ -228,6 +265,41 @@ def delete(id):
         return render_template(
             "add_user.html", form=form, name=name, our_users=our_users
         )
+
+
+# testing page to test and validate matching input. if match then render user's page.
+@app.route("/test_pw", methods=["GET", "POST"])
+def test_pw():
+    # initialize input variable and form object
+    email = None
+    password = None
+    pw_to_check = None
+    passed = None
+    form = PasswordForm()
+
+    # if the user (must) fill out the form, then we get the name variable and reset the form
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password_hash.data
+
+        form.email.data = ""
+        form.password_hash.data = ""
+        # flash("Form Submitted Successfully!")
+
+        # get the password based on user
+        pw_to_check = Users.query.filter_by(email=email).first()
+
+        # check hashed password:
+        passed = check_password_hash(pw_to_check.password_hash, password)
+
+    return render_template(
+        "test_pw.html",
+        email=email,
+        password=password,
+        form=form,
+        pw_to_check=pw_to_check,
+        passed=passed,
+    )
 
 
 if __name__ == "__main__":
