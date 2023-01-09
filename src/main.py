@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from flask import request
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # create a flask project
 app = Flask(__name__)
@@ -43,6 +44,22 @@ class Users(db.Model):
     date_added = db.Column(
         db.DateTime, default=datetime.utcnow
     )  # date that they created, not update tho
+
+    # set up password
+    password_hash = db.Column(db.String(128))
+
+    @property
+    def password(self):
+        raise AttributeError("password is not a readable attribute!")
+
+    @password.setter
+    def password(self, password):
+        # hash the user's input password
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        # verify input password
+        return check_password_hash(self.password_hash, password)
 
     # create a string representation of object for debugging
     def __repr__(self):
