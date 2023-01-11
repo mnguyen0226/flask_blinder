@@ -22,32 +22,32 @@
         {% if name %}
         <h1>Hello {{name}}. Welcome to your personal page.</h1>
 
-    {% else %}
+        {% else %}
 
-    <h1>Updated User Registers</h1>
-    <br/>
+        <h1>Updated User Registers</h1>
+        <br/>
 
-    <form action="/update/{{ name_to_update.id }}" method="POST">
-        {{form.hidden_tag()}}
+        <form action="/update/{{ name_to_update.id }}" method="POST">
+            {{form.hidden_tag()}}
 
-        {{form.name.label(class="form-label")}}
-        {{form.name(class="form-control", value=name_to_update.name)}}
-        </br>
-        
-        {{form.email.label(class="form-label")}}
-        {{form.email(class="form-control", value=name_to_update.email)}}
-        </br>
+            {{form.name.label(class="form-label")}}
+            {{form.name(class="form-control", value=name_to_update.name)}}
+            </br>
+            
+            {{form.email.label(class="form-label")}}
+            {{form.email(class="form-control", value=name_to_update.email)}}
+            </br>
 
-        {{form.fav_color.label(class="form-label")}}
-        {{form.fav_color(class="form-control", value=name_to_update.fav_color)}}
-        </br>
+            {{form.fav_color.label(class="form-label")}}
+            {{form.fav_color(class="form-control", value=name_to_update.fav_color)}}
+            </br>
 
-        {{form.submit(class="btn btn-secondary")}}
-        
-        <a href="{{url_for('delete', id=name_to_update.id)}}" class="btn btn-danger">Delete</a>
-    </form>
+            {{form.submit(class="btn btn-secondary")}}
+            
+            <a href="{{url_for('delete', id=name_to_update.id)}}" class="btn btn-danger">Delete</a>
+        </form>
 
-    {% endif %}
+        {% endif %}
     </div>
 
     <br/><br/><br/>

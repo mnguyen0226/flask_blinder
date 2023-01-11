@@ -12,9 +12,10 @@ from wtforms.validators import EqualTo
 from wtforms.validators import Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from datetime import datetime
+from datetime import datetime, date
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms.widgets import TextArea
 
 # create a flask project
 app = Flask(__name__)
@@ -37,6 +38,17 @@ db = SQLAlchemy(app)
 # migrate our app with current database (aka, update database)
 migrate = Migrate(app, db)
 app.app_context().push()
+
+# Page to return JSON - we can actually build an API with JSON
+@app.route("/date")
+def get_current_date():
+    favorite_pizza = {
+        "John": "Pepperoni",
+        "Mary": "Cheese",
+        "Tim": "Mushroom",
+    }
+    return {favorite_pizza}
+
 
 # create database model
 class Users(db.Model):
@@ -72,10 +84,22 @@ class Users(db.Model):
         return "<Name %r>" % self.name
 
 
+# create a blog post model - similar to form
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    content = db.Column(db.Text)
+    author = db.Column(db.String(255))
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow())
+    slug = db.Column(
+        db.String(255)
+    )  # instead of url "/post/3" it can be "/post/third_post"
+
+
 class UserForm(FlaskForm):
     name = StringField("Enter Name", validators=[DataRequired()])
     email = StringField("Enter Email", validators=[DataRequired()])
-    fav_color = StringField("Enter Color")
+    fav_color = StringField("Enter Color", validators=[DataRequired()])
 
     # need 2 password 1 for enter, 1 for confirm the same typed password
     password_hash = PasswordField(
@@ -102,6 +126,15 @@ class NamerForm(FlaskForm):
 class PasswordForm(FlaskForm):
     email = StringField("What's Your Email?", validators=[DataRequired()])
     password_hash = PasswordField("What's Your Password?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+# create a post form
+class PostForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    content = StringField("Content", validators=[DataRequired()], widget=TextArea())
+    author = StringField("Author", validators=[DataRequired()])
+    slug = StringField("Slug", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 
@@ -145,7 +178,7 @@ def name():
     return render_template("name.html", name=name, form=form)
 
 
-# allow to enter a user info and show in the same page
+# allow to enter a user info and show in the same page. Mini Project 1: Patient Register
 @app.route("/user/add", methods=["GET", "POST"])
 def add_user():
     name = None
@@ -208,8 +241,8 @@ def add_user():
 
 
 # update database record
-@app.route("/update/<int:id>", methods=["GET", "POST"])
-def update(id):
+@app.route("/update/<int:id>", methods=["GET", "POST"])  # mini project 1: Patient Info
+def update(id):  # this is an update page
     form = UserForm()
 
     # try to find the user info from database
@@ -300,6 +333,43 @@ def test_pw():
         pw_to_check=pw_to_check,
         passed=passed,
     )
+
+
+# Add Post Page
+@app.route("/add-post", methods=["GET", "POST"])
+def add_post():
+    form = PostForm()
+
+    # if the user fill out the form, we will fillout in the database
+    if form.validate_on_submit():
+        post = Posts(
+            title=form.title.data,
+            content=form.content.data,
+            author=form.author.data,
+            slug=form.slug.data,
+        )
+
+        # clear form
+        form.title.data = ""
+        form.content.data = ""
+        form.author.data = ""
+        form.slug.data = ""
+
+        # add a new row to database
+        db.session.add(post)
+        db.session.commit()
+
+        flash("Blog Post Submitted Successfully!")
+
+    return render_template("add_post.html", form=form)
+
+
+# createa page to view all posts
+@app.route("/posts")
+def posts():
+    # get all posts from database
+    posts = Posts.query.order_by(Posts.date_posted)
+    return render_template("posts.html", posts=posts)
 
 
 if __name__ == "__main__":
