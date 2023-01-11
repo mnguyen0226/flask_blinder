@@ -35,8 +35,41 @@
               <strong>Favorite Color: </strong>{{current_user.fav_color}}</br>
               <strong>Date Joined: </strong>{{current_user.date_added}}</br></br>
               <a href="{{url_for('logout')}}" class="btn btn-primary">Logout</a>
+              <a href="{{url_for('update', id=current_user.id)}}" class="btn btn-secondary">Go to Update Page</a> 
+              <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger">Delete Profile</a>
             </div>
           </div>
+    </div>
+    </br>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="card-header">
+                <h3>Or Update Profile Right Here With Current User</h3>
+
+                <form action="/dashboard" method="POST">
+                    {{form.hidden_tag()}}
+        
+                    {{form.name.label(class="form-label")}}
+                    {{form.name(class="form-control", value=name_to_update.name)}}
+                    </br>
+                    
+                    {{form.username.label(class="form-label")}}
+                    {{form.username(class="form-control", value=name_to_update.username)}}
+                    </br>
+        
+                    {{form.email.label(class="form-label")}}
+                    {{form.email(class="form-control", value=name_to_update.email)}}
+                    </br>
+        
+                    {{form.fav_color.label(class="form-label")}}
+                    {{form.fav_color(class="form-control", value=name_to_update.fav_color)}}
+                    </br>
+        
+                    {{form.submit(class="btn btn-secondary")}}
+                </form>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

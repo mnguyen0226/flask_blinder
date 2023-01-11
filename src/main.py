@@ -286,6 +286,7 @@ def update(id):
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
         name_to_update.fav_color = request.form["fav_color"]
+        name_to_update.username = request.form["username"]
 
         # if the infromation is update successfully, we return back to the users register page
         try:
@@ -499,11 +500,40 @@ def login():
     return render_template("login.html", form=form)
 
 
-# PAGE: dashboard page
+# PAGE: dashboard page, we should add ability to update
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required  # just make sure that we have to login first before go to dashboard
 def dashboard():
-    return render_template("dashboard.html")
+    form = UserForm()
+    id = current_user.id
+    # try to find the user info from database
+    name_to_update = Users.query.get_or_404(id)
+
+    # POST: if the user fill out the form and send the information back to database
+    if request.method == "POST":
+        name_to_update.name = request.form["name"]
+        name_to_update.email = request.form["email"]
+        name_to_update.fav_color = request.form["fav_color"]
+        name_to_update.username = request.form["username"]
+
+        # if the infromation is update successfully, we return back to the users register page
+        try:
+            db.session.commit()
+            flash(" Updated Successfully!")
+            return render_template(
+                "dashboard.html", form=form, name_to_update=name_to_update
+            )
+        # if we can't then stay at the same page and try again
+        except:
+            flash("Error: Can't update. Try again!")
+            return render_template(
+                "dashboard.html", form=form, name_to_update=name_to_update
+            )
+    # GET: if they just go (or refresh), then just render the curretn page
+    else:
+        return render_template(
+            "dashboard.html", form=form, name_to_update=name_to_update
+        )
 
 
 # logout
