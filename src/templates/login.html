@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %} 
+    <div>Note: Page allow multiple user to insert info in form.</div>
+
+    <br/>
+
+    <div>    
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    </div>
+
+    <div class="shadow p-3 mb-5 bg-white rounded card">
+
+        <h1>Login</h1>
+        <br/>
+
+        <form method="POST">
+            {{form.hidden_tag()}}
+
+            {{form.username.label(class="form-label")}}
+            {{form.username(class="form-control")}}
+            </br>
+            
+            {{form.password.label(class="form-label")}}
+            {{form.password(class="form-control")}}
+            </br>
+
+            {{form.submit(class="btn btn-secondary")}}
+        </form>
+    </div>
+
+{% endblock %}

@@ -20,7 +20,7 @@
 
     <div class="shadow p-3 mb-5 bg-white rounded card">
         {% if name %}
-        <h1>Hello {{name}}. Welcome to your personal page.</h1>
+        <h1>Added {{name}}!</h1>
 
         {% else %}
 
@@ -32,6 +32,10 @@
 
             {{form.name.label(class="form-label")}}
             {{form.name(class="form-control")}}
+            </br>
+
+            {{form.username.label(class="form-label")}}
+            {{form.username(class="form-control")}}
             </br>
             
             {{form.email.label(class="form-label")}}
@@ -64,6 +68,7 @@
         <tr>  
             <td>
                 {{our_user.id}}. <a href="{{url_for('update', id=our_user.id)}}">{{our_user.name}}</a> 
+                - {{our_user.username}}
                 - {{our_user.email}} 
                 - {{our_user.fav_color}} 
                 - <a href="{{url_for('delete', id=our_user.id)}}">Delete</a>

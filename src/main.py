@@ -17,6 +17,14 @@ from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from flask import redirect, url_for
+from flask_login import (
+    UserMixin,
+    login_user,
+    LoginManager,
+    login_required,
+    logout_user,
+    current_user,
+)
 
 # create a flask project
 app = Flask(__name__)
@@ -51,9 +59,10 @@ def get_current_date():
     return {favorite_pizza}
 
 
-# create database model
-class Users(db.Model):
+# create database model - add UserMixin for login and session
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(
         db.String(200), nullable=False, unique=True
@@ -99,6 +108,7 @@ class Posts(db.Model):
 
 class UserForm(FlaskForm):
     name = StringField("Enter Name", validators=[DataRequired()])
+    username = StringField("Enter UserName", validators=[DataRequired()])
     email = StringField("Enter Email", validators=[DataRequired()])
     fav_color = StringField("Enter Color", validators=[DataRequired()])
 
@@ -136,6 +146,25 @@ class PostForm(FlaskForm):
     content = StringField("Content", validators=[DataRequired()], widget=TextArea())
     author = StringField("Author", validators=[DataRequired()])
     slug = StringField("Slug", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+# Flask_Login Backend: session
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"  # function login()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    # to load user, we need to query database
+    return Users.query.get(int(user_id))
+
+
+# create a login form
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("What's Your Password?", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 
@@ -202,6 +231,7 @@ def add_user():
                 # create a new user (row in database)
                 new_user = Users(
                     name=form.name.data,
+                    username=form.username.data,
                     email=form.email.data,
                     fav_color=form.fav_color.data,
                     password_hash=hashed_pw,
@@ -213,6 +243,7 @@ def add_user():
 
                 # get name from form
                 name = form.name.data
+                flash("User Added Successfully!")
 
             else:
                 flash(
@@ -221,6 +252,7 @@ def add_user():
 
             # reset info
             form.name.data = ""
+            form.username.data = ""
             form.email.data = ""
             form.fav_color.data = ""
             form.password_hash.data = ""
@@ -413,6 +445,72 @@ def edit_post(id):
     form.content.data = post_to_update.content
 
     return render_template("edit_post.html", form=form)
+
+
+# feature allow to delete post
+@app.route("/posts/delete/<int:id>")
+def delete_post(id):
+    post_to_delete = Posts.query.get_or_404(id)
+    posts = Posts.query.order_by(Posts.date_posted)
+
+    try:
+        db.session.delete(post_to_delete)
+        db.session.commit()
+
+        flash("Blog Deleted Successfully!")
+
+        posts = Posts.query.order_by(Posts.date_posted)
+        return render_template("posts.html", posts=posts)
+    except:
+        flash("Error: Unable to delete blog post. Try again.")
+        return render_template("posts.html", posts=posts)
+
+
+# PAGE: login page
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+
+    # if the user fill out the form
+    if form.validate_on_submit():
+
+        # get the first user name
+        user = Users.query.filter_by(username=form.username.data).first()
+
+        # if found user in the database
+        if user:
+            # if the password match
+            filled_password = form.password.data
+
+            if check_password_hash(user.password_hash, filled_password):
+                # the pacage will login and create a session
+                flash("Correct Password! Log in Successfully!")
+                login_user(user)
+                return redirect(url_for("dashboard"))
+            else:
+                flash("Wrong Password! Fail to Log in!")
+
+        # if does not find the user in the database
+        else:
+            flash("Username Does Not Exist! Try Again!")
+
+    return render_template("login.html", form=form)
+
+
+# PAGE: dashboard page
+@app.route("/dashboard", methods=["GET", "POST"])
+@login_required  # just make sure that we have to login first before go to dashboard
+def dashboard():
+    return render_template("dashboard.html")
+
+
+# logout
+@app.route("/logout", methods=["POST", "GET"])
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out!")
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
