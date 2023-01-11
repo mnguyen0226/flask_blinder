@@ -18,6 +18,8 @@
     {% endfor %}
     </div>
 
+    {% if current_user.is_authenticated %}
+
     <div class="shadow p-3 mb-5 bg-white rounded card">
    
         <h1>Blog Register</h1>
@@ -45,5 +47,11 @@
 
             {{form.submit(class="btn btn-secondary")}}
         </form>
+    
+    {% else %}
+        <h1>Must Be Logged In</h1>
+        <p>You must log in to access this page!</p>
+        <a href="{{url_for('login')}}">Login Here</a>
+    {% endif %}
 
 {% endblock %}

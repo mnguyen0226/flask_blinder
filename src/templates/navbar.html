@@ -8,26 +8,38 @@
     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-            <a class="nav-link" href="{{url_for('user', name='John')}}">User Profile</a>
+            <a class="nav-link" href="{{url_for('user', name='John')}}">(X) User Profile</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('name')}}">Static Name</a>
+                <a class="nav-link" href="{{url_for('name')}}">(X) Static Name</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('add_user')}}">Users Form</a>
+                <a class="nav-link" href="{{url_for('test_pw')}}">(X) Test Password</a>
+            </li>
+
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('dashboard')}}">Dashboard</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('test_pw')}}">Test Password</a>
+                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
             </li>
+            {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('add_post')}}">Blog Form</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{url_for('posts')}}">All Blogs</a>
+                <a class="nav-link" href="{{url_for('add_user')}}">Sign Up</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('login')}}">Login</a>
             </li>
+            {% endif %}
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('add_post')}}">Add Blog</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('posts')}}">View All Blogs</a>
+            </li>
+
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">

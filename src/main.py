@@ -368,8 +368,9 @@ def test_pw():
     )
 
 
-# Add Post Page
+# Add Post Page - We need to make sure that the login require
 @app.route("/add-post", methods=["GET", "POST"])
+# @login_required
 def add_post():
     form = PostForm()
 
@@ -415,6 +416,7 @@ def post(id):
 
 # update database record for single blog post
 @app.route("/posts/edit/<int:id>", methods=["GET", "POST"])
+@login_required
 def edit_post(id):
     form = PostForm()
 
