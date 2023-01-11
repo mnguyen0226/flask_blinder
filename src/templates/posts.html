@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Blog Page{% endblock %}
+{% block title %}All Blog{% endblock %}
 
 {% block content %} 
     <div>Note: Page allow a user view all posts.</div>
@@ -24,12 +24,19 @@
 
     {% for post in posts %}
         <div class="shadow p-3 mb-5 bg-white rounded card">
+        <div>
+            <a href="{{url_for('post', id=post.id)}}">Title: {{post.title}}</a></br>
+            Author: {{post.author}}</br>
+            Slug: {{post.slug}}</br>
+            Post Date: {{post.date_posted}}</br>
+            Content: {{post.content}}</br>
+        </div>
+        </br>
+        <div>
+            <button type="button" class="btn btn-primary btn-sm"><a href="{{url_for('post', id=post.id)}}">View Post</a></button>
+            <button type="button" class="btn btn-info btn-sm"><a href="{{url_for('edit_post', id=post.id)}}">Edit Post</a></button>
+        </div>
 
-        Title: {{post.title}}</br>
-        Author: {{post.author}}</br>
-        Slug: {{post.slug}}</br>
-        Post Date: {{post.date_posted}}</br>
-        Content: {{post.content}}</br>
         </div></br>
     {% endfor%}
 

@@ -16,6 +16,7 @@ from datetime import datetime, date
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
+from flask import redirect, url_for
 
 # create a flask project
 app = Flask(__name__)
@@ -240,15 +241,15 @@ def add_user():
         )
 
 
-# update database record
+# update database record for user info
 @app.route("/update/<int:id>", methods=["GET", "POST"])  # mini project 1: Patient Info
-def update(id):  # this is an update page
+def update(id):
     form = UserForm()
 
     # try to find the user info from database
     name_to_update = Users.query.get_or_404(id)
 
-    # POST: if the user fill out the form and send the information back to us
+    # POST: if the user fill out the form and send the information back to database
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
@@ -257,7 +258,7 @@ def update(id):  # this is an update page
         # if the infromation is update successfully, we return back to the users register page
         try:
             db.session.commit()
-            flash(" updated Successfully!")
+            flash(" Updated Successfully!")
             return render_template(
                 "update.html", form=form, name_to_update=name_to_update
             )
@@ -364,12 +365,54 @@ def add_post():
     return render_template("add_post.html", form=form)
 
 
-# createa page to view all posts
+# create a page to view all posts
 @app.route("/posts")
 def posts():
     # get all posts from database
     posts = Posts.query.order_by(Posts.date_posted)
     return render_template("posts.html", posts=posts)
+
+
+# create a page that allow to
+@app.route("/posts/<int:id>")
+def post(id):
+    # found the post from the id
+    post = Posts.query.get_or_404(id)
+    return render_template("post.html", post=post)
+
+
+# update database record for single blog post
+@app.route("/posts/edit/<int:id>", methods=["GET", "POST"])
+def edit_post(id):
+    form = PostForm()
+
+    # if the user fill out the form and send the info back to database
+    post_to_update = Posts.query.get_or_404(id)
+
+    # POST
+    if form.validate_on_submit():
+        # update in the database
+        post_to_update.title = form.title.data
+        post_to_update.author = form.author.data
+        post_to_update.slug = form.slug.data
+        post_to_update.content = form.content.data
+
+        # commit to the database
+        db.session.add(post_to_update)
+        db.session.commit()
+
+        flash("Post Updated Successfully!")
+
+        # can render instead of redirect. go back to the single blog post
+        return redirect(url_for("post", id=post_to_update.id))
+
+    # you can do this or just pass in "post_to_update" with the fill out value (similar to update.html)
+    form.title.data = post_to_update.title
+    form.author.data = post_to_update.author
+    form.slug.data = post_to_update.slug
+    form.content.data = post_to_update.content
+
+    return render_template("edit_post.html", form=form)
 
 
 if __name__ == "__main__":
