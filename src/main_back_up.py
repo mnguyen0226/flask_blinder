@@ -1,7 +1,22 @@
-from flask import Flask, render_template, flash, request, redirect, url_for
+from flask import Flask
+from flask import render_template
+from flask import flash
 from flask_wtf import FlaskForm
+from wtforms import StringField
+from wtforms import PasswordField
+from wtforms import BooleanField
+from wtforms import ValidationError
+from wtforms import SubmitField
+from wtforms.validators import DataRequired
+from wtforms.validators import EqualTo
+from wtforms.validators import Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime, date
+from flask import request
+from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms.widgets import TextArea
+from flask import redirect, url_for
 from flask_login import (
     UserMixin,
     login_user,
@@ -10,13 +25,6 @@ from flask_login import (
     logout_user,
     current_user,
 )
-from datetime import datetime, date
-from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms.widgets import TextArea
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, EqualTo
-
-from webforms import UserForm, NamerForm, PasswordForm, PostForm, LoginForm
 
 # create a flask project
 app = Flask(__name__)
@@ -51,18 +59,113 @@ def get_current_date():
     return {favorite_pizza}
 
 
+# create database model - add UserMixin for login and session
+class Users(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(
+        db.String(200), nullable=False, unique=True
+    )  # if not, will not be added to the database
+    fav_color = db.Column(db.String(120), nullable=True)
+    date_added = db.Column(
+        db.DateTime, default=datetime.utcnow
+    )  # date that they created, not update tho
+
+    # set up password
+    password_hash = db.Column(db.String(128))
+
+    @property
+    def password(self):
+        # this so that when the user try to view the password with "user.password", will get the error message
+        raise AttributeError("password is not a readable attribute!")
+
+    @password.setter
+    def password(self, password):
+        # hash the user's input password
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        # verify input password
+        return check_password_hash(self.password_hash, password)
+
+    # create a string representation of object for debugging
+    def __repr__(self):
+        return "<Name %r>" % self.name
+
+
+# create a blog post model - similar to form
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    content = db.Column(db.Text)
+    author = db.Column(db.String(255))
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow())
+    slug = db.Column(
+        db.String(255)
+    )  # instead of url "/post/3" it can be "/post/third_post"
+
+
+class UserForm(FlaskForm):
+    name = StringField("Enter Name", validators=[DataRequired()])
+    username = StringField("Enter UserName", validators=[DataRequired()])
+    email = StringField("Enter Email", validators=[DataRequired()])
+    fav_color = StringField("Enter Color", validators=[DataRequired()])
+
+    # need 2 password 1 for enter, 1 for confirm the same typed password
+    password_hash = PasswordField(
+        "Password",
+        validators=[
+            DataRequired(),
+            EqualTo("password_hash2", message="Passwords Must Match!"),
+        ],
+    )
+    password_hash2 = PasswordField(
+        "Confirm Password", validators=[DataRequired()]
+    )  # does not exist in the actual database
+
+    submit = SubmitField("Submit")
+
+
+# create a form class for input submission
+class NamerForm(FlaskForm):
+    name = StringField("What's Your Name?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+# create a form class to test for password
+class PasswordForm(FlaskForm):
+    email = StringField("What's Your Email?", validators=[DataRequired()])
+    password_hash = PasswordField("What's Your Password?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+# create a post form
+class PostForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    content = StringField("Content", validators=[DataRequired()], widget=TextArea())
+    author = StringField("Author", validators=[DataRequired()])
+    slug = StringField("Slug", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
 # Flask_Login Backend: session
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"  # function login()
 
-####################################################################################
-# ROUTES
-####################################################################################
+
 @login_manager.user_loader
 def load_user(user_id):
     # to load user, we need to query database
     return Users.query.get(int(user_id))
+
+
+# create a login form
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("What's Your Password?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 
 # home page
@@ -440,56 +543,6 @@ def logout():
     logout_user()
     flash("You have been logged out!")
     return redirect(url_for("login"))
-
-
-####################################################################################
-# DATABASES
-####################################################################################
-# create database model - add UserMixin for login and session
-class Users(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
-    name = db.Column(db.String(200), nullable=False)
-    email = db.Column(
-        db.String(200), nullable=False, unique=True
-    )  # if not, will not be added to the database
-    fav_color = db.Column(db.String(120), nullable=True)
-    date_added = db.Column(
-        db.DateTime, default=datetime.utcnow
-    )  # date that they created, not update tho
-
-    # set up password
-    password_hash = db.Column(db.String(128))
-
-    @property
-    def password(self):
-        # this so that when the user try to view the password with "user.password", will get the error message
-        raise AttributeError("password is not a readable attribute!")
-
-    @password.setter
-    def password(self, password):
-        # hash the user's input password
-        self.password_hash = generate_password_hash(password)
-
-    def verify_password(self, password):
-        # verify input password
-        return check_password_hash(self.password_hash, password)
-
-    # create a string representation of object for debugging
-    def __repr__(self):
-        return "<Name %r>" % self.name
-
-
-# create a blog post model - similar to form
-class Posts(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    content = db.Column(db.Text)
-    author = db.Column(db.String(255))
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow())
-    slug = db.Column(
-        db.String(255)
-    )  # instead of url "/post/3" it can be "/post/third_post"
 
 
 if __name__ == "__main__":
