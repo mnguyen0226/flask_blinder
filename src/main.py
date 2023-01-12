@@ -28,7 +28,7 @@ app = Flask(__name__)
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://username:password@localhost/db_name"
 app.config[
     "SQLALCHEMY_DATABASE_URI"
-] = "mysql+pymysql://root:password123@localhost/our_users"
+] = "mysql+pymysql://root:password123@localhost/our_users2"
 
 # init secret key
 app.config["SECRET_KEY"] = "secret key"
@@ -172,6 +172,7 @@ def add_user():
 
 # update database record for user info
 @app.route("/update/<int:id>", methods=["GET", "POST"])  # mini project 1: Patient Info
+@login_required
 def update(id):
     form = UserForm()
 
@@ -190,17 +191,19 @@ def update(id):
             db.session.commit()
             flash(" Updated Successfully!")
             return render_template(
-                "update.html", form=form, name_to_update=name_to_update
+                "update.html", form=form, name_to_update=name_to_update, id=id
             )
         # if we can't then stay at the same page and try again
         except:
             flash("Error: Can't update. Try again!")
             return render_template(
-                "update.html", form=form, name_to_update=name_to_update
+                "update.html", form=form, name_to_update=name_to_update, ud=id
             )
     # GET: if they just go (or refresh), then just render the curretn page
     else:
-        return render_template("update.html", form=form, name_to_update=name_to_update)
+        return render_template(
+            "update.html", form=form, name_to_update=name_to_update, id=id
+        )
 
 
 # delete the record from the database
@@ -210,6 +213,16 @@ def delete(id):
     user_to_delete = Users.query.get_or_404(id)
     name = None
     form = UserForm()
+    our_users = Users.query.order_by(Users.date_added)
+
+    # # if you did not login to your account then you can't delete your own account
+    # if id != current_user.id:
+
+    #     flash("Access Denied! You have to login to your account to delete")
+
+    #     return render_template(
+    #         "add_user.html", form=form, name=name, our_users=our_users
+    #     )
 
     try:
         # delete from db
@@ -274,17 +287,20 @@ def add_post():
 
     # if the user fill out the form, we will fillout in the database
     if form.validate_on_submit():
+        # get logged in user id
+        poster = current_user.id
+
         post = Posts(
             title=form.title.data,
             content=form.content.data,
-            author=form.author.data,
+            poster_id=poster,  # connect the Posts' database foreign key with the User's database primary key
             slug=form.slug.data,
         )
 
         # clear form
         form.title.data = ""
         form.content.data = ""
-        form.author.data = ""
+        # form.author.data = ""
         form.slug.data = ""
 
         # add a new row to database
@@ -325,7 +341,7 @@ def edit_post(id):
     if form.validate_on_submit():
         # update in the database
         post_to_update.title = form.title.data
-        post_to_update.author = form.author.data
+        # post_to_update.author = form.author.data
         post_to_update.slug = form.slug.data
         post_to_update.content = form.content.data
 
@@ -340,7 +356,7 @@ def edit_post(id):
 
     # you can do this or just pass in "post_to_update" with the fill out value (similar to update.html)
     form.title.data = post_to_update.title
-    form.author.data = post_to_update.author
+    # form.author.data = post_to_update.author
     form.slug.data = post_to_update.slug
     form.content.data = post_to_update.content
 
@@ -461,6 +477,9 @@ class Users(db.Model, UserMixin):
     # set up password
     password_hash = db.Column(db.String(128))
 
+    # user can have many posts. The back reference allow you to access all attribute in this class like poster.username
+    posts = db.relationship("Posts", backref="poster")
+
     @property
     def password(self):
         # this so that when the user try to view the password with "user.password", will get the error message
@@ -485,11 +504,16 @@ class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     content = db.Column(db.Text)
-    author = db.Column(db.String(255))
+    # author = db.Column(db.String(255))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow())
     slug = db.Column(
         db.String(255)
     )  # instead of url "/post/3" it can be "/post/third_post"
+
+    # foreign key to link user (refer to primary key to user)
+    poster_id = db.Column(
+        db.Integer, db.ForeignKey("users.id")
+    )  # note that although it is lower case it is reference Users() class
 
 
 if __name__ == "__main__":

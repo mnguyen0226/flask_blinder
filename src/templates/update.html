@@ -7,6 +7,7 @@
 
     <br/>
 
+    {% if id == current_user.id %}
     <div>    
     {% for message in get_flashed_messages() %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -19,13 +20,7 @@
     </div>
 
     <div class="shadow p-3 mb-5 bg-white rounded">
-        {% if name %}
-        <h1>Hello {{name}}. Welcome to your personal page.</h1>
-
-        {% else %}
-
         <h1>Updated User Registers</h1>
-        <br/>
 
         <form action="/update/{{ name_to_update.id }}" method="POST">
             {{form.hidden_tag()}}
@@ -50,8 +45,6 @@
             
             <a href="{{url_for('delete', id=name_to_update.id)}}" class="btn btn-danger">Delete</a>
         </form>
-
-        {% endif %}
     </div>
 
     <br/><br/><br/>
@@ -64,5 +57,17 @@
         </td>
     </tr>
     </table>
+
+    {% else %}
+        <h1>Access Denied</h1>
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Sorry, You can't edit this user.</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+    {% endif %}
 
 {% endblock %}
