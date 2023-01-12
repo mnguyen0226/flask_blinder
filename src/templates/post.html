@@ -35,8 +35,10 @@
 
     <div>
         <button type="button" class="btn btn-primary btn-sm"><a href="{{url_for('posts')}}">Back to Blogs</a></button>
-        <button type="button" class="btn btn-info btn-sm"><a href="{{url_for('edit_post', id=post.id)}}">Edit Post</a></button>
-        <button type="button" class="btn btn-danger btn-sm"><a href="{{url_for('delete_post', id=post.id)}}">Delete Post</a></button>
+        {% if post.poster_id == current_user.id %}
+            <button type="button" class="btn btn-info btn-sm"><a href="{{url_for('edit_post', id=post.id)}}">Edit Post</a></button>
+            <button type="button" class="btn btn-danger btn-sm"><a href="{{url_for('delete_post', id=post.id)}}">Delete Post</a></button>
+        {% endif %}
     </div>
 
     </div></br>

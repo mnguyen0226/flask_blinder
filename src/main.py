@@ -336,49 +336,65 @@ def edit_post(id):
 
     # if the user fill out the form and send the info back to database
     post_to_update = Posts.query.get_or_404(id)
+    if current_user.id == post_to_update.poster_id:
 
-    # POST
-    if form.validate_on_submit():
-        # update in the database
-        post_to_update.title = form.title.data
-        # post_to_update.author = form.author.data
-        post_to_update.slug = form.slug.data
-        post_to_update.content = form.content.data
+        # POST -> This is when you access the edit page (not thru clicking button)
+        if form.validate_on_submit():
+            # update in the database
+            post_to_update.title = form.title.data
+            # post_to_update.author = form.author.data
+            post_to_update.slug = form.slug.data
+            post_to_update.content = form.content.data
 
-        # commit to the database
-        db.session.add(post_to_update)
-        db.session.commit()
+            # commit to the database
+            db.session.add(post_to_update)
+            db.session.commit()
 
-        flash("Post Updated Successfully!")
+            flash("Post Updated Successfully!")
 
-        # can render instead of redirect. go back to the single blog post
-        return redirect(url_for("post", id=post_to_update.id))
+            # can render instead of redirect. go back to the single blog post
+            return redirect(url_for("post", id=post_to_update.id))
 
-    # you can do this or just pass in "post_to_update" with the fill out value (similar to update.html)
-    form.title.data = post_to_update.title
-    # form.author.data = post_to_update.author
-    form.slug.data = post_to_update.slug
-    form.content.data = post_to_update.content
+    # if the logged in user has the post matched with the poster id
+    # the reason why we put this hear is that when we try to access via URL or thru btton
+        # you can do this or just pass in "post_to_update" with the fill out value (similar to update.html)
+        form.title.data = post_to_update.title
+        # form.author.data = post_to_update.author
+        form.slug.data = post_to_update.slug
+        form.content.data = post_to_update.content
+        return render_template("edit_post.html", form=form)
 
-    return render_template("edit_post.html", form=form)
-
+    else:
+        flash("You Aren't Authorized To Edit Page!")
+        # get all posts from database
+        posts = Posts.query.order_by(Posts.date_posted)
+        return render_template("posts.html", posts=posts)
 
 # feature allow to delete post
 @app.route("/posts/delete/<int:id>")
+@login_required
 def delete_post(id):
     post_to_delete = Posts.query.get_or_404(id)
-    posts = Posts.query.order_by(Posts.date_posted)
+    
+    # if the current login user id == the id of the blog's author's id
+    if current_user.id == post_to_delete.poster.id:
 
-    try:
-        db.session.delete(post_to_delete)
-        db.session.commit()
+        try:
+            db.session.delete(post_to_delete)
+            db.session.commit()
 
-        flash("Blog Deleted Successfully!")
+            flash("Blog Deleted Successfully!")
+
+            posts = Posts.query.order_by(Posts.date_posted)
+            return render_template("posts.html", posts=posts)
+        
+        except:
+            flash("Error: Unable to delete blog post. Try again.")
+            return render_template("posts.html", posts=posts)
+    else:
+        flash("You aren't authorize to delete that post!")
 
         posts = Posts.query.order_by(Posts.date_posted)
-        return render_template("posts.html", posts=posts)
-    except:
-        flash("Error: Unable to delete blog post. Try again.")
         return render_template("posts.html", posts=posts)
 
 
