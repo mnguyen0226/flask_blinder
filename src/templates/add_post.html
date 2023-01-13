@@ -43,6 +43,9 @@
             {{form.submit(class="btn btn-secondary")}}
         </form>
     
+        {{ ckeditor.load() }}
+        {{ ckeditor.config(name='content')}}
+
     {% else %}
         <h1>Must Be Logged In</h1>
         <p>You must log in to access this page!</p>

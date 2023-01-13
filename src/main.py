@@ -15,11 +15,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
-
-from webforms import UserForm, NamerForm, PasswordForm, PostForm, LoginForm
+from webforms import UserForm, NamerForm, PasswordForm, PostForm, LoginForm, SearchForm
+from flask_ckeditor import CKEditor
 
 # create a flask project
 app = Flask(__name__)
+
+# add ckeditor
+ckeditor = CKEditor(app)
 
 # init database as sqlite
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
@@ -355,8 +358,8 @@ def edit_post(id):
             # can render instead of redirect. go back to the single blog post
             return redirect(url_for("post", id=post_to_update.id))
 
-    # if the logged in user has the post matched with the poster id
-    # the reason why we put this hear is that when we try to access via URL or thru btton
+        # if the logged in user has the post matched with the poster id
+        # the reason why we put this hear is that when we try to access via URL or thru btton
         # you can do this or just pass in "post_to_update" with the fill out value (similar to update.html)
         form.title.data = post_to_update.title
         # form.author.data = post_to_update.author
@@ -370,12 +373,13 @@ def edit_post(id):
         posts = Posts.query.order_by(Posts.date_posted)
         return render_template("posts.html", posts=posts)
 
+
 # feature allow to delete post
 @app.route("/posts/delete/<int:id>")
 @login_required
 def delete_post(id):
     post_to_delete = Posts.query.get_or_404(id)
-    
+
     # if the current login user id == the id of the blog's author's id
     if current_user.id == post_to_delete.poster.id:
 
@@ -387,7 +391,7 @@ def delete_post(id):
 
             posts = Posts.query.order_by(Posts.date_posted)
             return render_template("posts.html", posts=posts)
-        
+
         except:
             flash("Error: Unable to delete blog post. Try again.")
             return render_template("posts.html", posts=posts)
@@ -472,6 +476,38 @@ def logout():
     logout_user()
     flash("You have been logged out!")
     return redirect(url_for("login"))
+
+
+# pass form to navbar - pass stuff to our base.html then it will be linked to navbar (as the base.html include the navbar)
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)
+
+
+# search function
+@app.route(
+    "/search", methods=["POST"]
+)  # only when the user "search", then the page will pop up
+def search():
+    form = SearchForm()
+
+    # get all submitted post!
+    posts = Posts.query
+
+    # if someone fillout the form
+    if form.validate_on_submit():
+
+        # get the data from the submit form
+        post_searched = form.searched.data
+
+        # query the databse
+        posts = posts.filter(Posts.content.like("%" + post_searched + "%"))
+        posts = posts.order_by(Posts.title).all()
+
+        return render_template(
+            "search.html", form=form, searched=post_searched, posts=posts
+        )
 
 
 ####################################################################################

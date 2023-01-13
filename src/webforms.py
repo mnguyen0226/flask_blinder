@@ -6,6 +6,7 @@ from wtforms import SubmitField
 from wtforms import StringField
 from wtforms import PasswordField
 from wtforms.widgets import TextArea
+from flask_ckeditor import CKEditor, CKEditorField
 
 
 class UserForm(FlaskForm):
@@ -45,8 +46,9 @@ class PasswordForm(FlaskForm):
 # create a post form
 class PostForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
-    content = StringField("Content", validators=[DataRequired()], widget=TextArea())
-    author = StringField("Author")
+    # content = StringField("Content", validators=[DataRequired()], widget=TextArea())
+    content = CKEditorField("Content", validators=[DataRequired()])
+    # author = StringField("Author")
     slug = StringField("Slug", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
@@ -55,4 +57,10 @@ class PostForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("What's Your Password?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+# create a search form
+class SearchForm(FlaskForm):
+    searched = StringField("Username", validators=[DataRequired()])
     submit = SubmitField("Submit")
