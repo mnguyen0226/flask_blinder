@@ -1,5 +1,4 @@
 from flask import Flask, render_template, flash, request, redirect, url_for
-from flask_wtf import FlaskForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import (
@@ -10,19 +9,13 @@ from flask_login import (
     logout_user,
     current_user,
 )
-from datetime import datetime, date
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms.widgets import TextArea
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, EqualTo
 from webforms import UserForm, NamerForm, PasswordForm, PostForm, LoginForm, SearchForm
 from flask_ckeditor import CKEditor
 
 # create a flask project
 app = Flask(__name__)
-
-# add ckeditor
-ckeditor = CKEditor(app)
 
 # init database as sqlite
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
@@ -59,15 +52,28 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"  # function login()
 
-####################################################################################
-# ROUTES
-####################################################################################
+
+# add ckeditor
+ckeditor = CKEditor(app)
+
+# function needed for Flask Login. you need this to user the function current_user.is_authenticated()
+# Reference: https://flask-login.readthedocs.io/en/latest/#how-it-works
 @login_manager.user_loader
 def load_user(user_id):
     # to load user, we need to query database
     return Users.query.get(int(user_id))
 
 
+# pass form to navbar - pass stuff to our base.html then it will be linked to navbar (as the base.html include the navbar)
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)
+
+
+####################################################################################
+# ROUTES
+####################################################################################
 # home page
 @app.route("/")
 def index():
@@ -284,7 +290,7 @@ def test_pw():
 
 # Add Post Page - We need to make sure that the login require
 @app.route("/add-post", methods=["GET", "POST"])
-# @login_required
+@login_required
 def add_post():
     form = PostForm()
 
@@ -476,14 +482,6 @@ def logout():
     logout_user()
     flash("You have been logged out!")
     return redirect(url_for("login"))
-
-
-# pass form to navbar - pass stuff to our base.html then it will be linked to navbar (as the base.html include the navbar)
-@app.context_processor
-def base():
-    form = SearchForm()
-    return dict(form=form)
-
 
 # search function
 @app.route(
