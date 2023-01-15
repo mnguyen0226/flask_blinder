@@ -507,6 +507,10 @@ def search():
             "search.html", form=form, searched=post_searched, posts=posts
         )
 
+# create admin page
+@app.route("/")
+def index(): 
+    return render_template("admin.html")
 
 ####################################################################################
 # DATABASES
