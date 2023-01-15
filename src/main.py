@@ -483,6 +483,7 @@ def logout():
     flash("You have been logged out!")
     return redirect(url_for("login"))
 
+
 # search function
 @app.route(
     "/search", methods=["POST"]
@@ -507,10 +508,19 @@ def search():
             "search.html", form=form, searched=post_searched, posts=posts
         )
 
-# create admin page
-@app.route("/")
-def index(): 
-    return render_template("admin.html")
+
+# create admin page: set page restriction base on account
+@app.route("/admin")
+@login_required
+def admin():
+    id = current_user.id  # admin has id == 6
+
+    if id == 6:
+        return render_template("admin.html")
+    else:
+        flash("Error: Must be admin to access this page!")
+        return redirect(url_for("dashboard"))
+
 
 ####################################################################################
 # DATABASES
