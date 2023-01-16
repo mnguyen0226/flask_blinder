@@ -13,6 +13,9 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from webforms import UserForm, NamerForm, PasswordForm, PostForm, LoginForm, SearchForm
 from flask_ckeditor import CKEditor
+from werkzeug.utils import secure_filename
+import uuid as uuid
+import os
 
 # create a flask project
 app = Flask(__name__)
@@ -24,10 +27,14 @@ app = Flask(__name__)
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://username:password@localhost/db_name"
 app.config[
     "SQLALCHEMY_DATABASE_URI"
-] = "mysql+pymysql://root:password123@localhost/our_users2"
+] = "mysql+pymysql://root:password123@localhost/our_users"
 
 # init secret key
 app.config["SECRET_KEY"] = "secret key"
+
+# set config to tell the app where to save the file
+UPLOAD_FOLDER = "static/images/"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # create database
 db = SQLAlchemy(app)
@@ -454,10 +461,30 @@ def dashboard():
         name_to_update.email = request.form["email"]
         name_to_update.fav_color = request.form["fav_color"]
         name_to_update.username = request.form["username"]
+        name_to_update.about_author = request.form["about_author"]
+        name_to_update.profile_pic = request.files[
+            "profile_pic"
+        ]  # form return the image object but we only want name
+
+        # the two steps below basically convert image file to just get name
+        # get image name
+        pic_filename = secure_filename(name_to_update.profile_pic.filename)
+
+        # set uuid - get random number to get unique name
+        pic_name = str(uuid.uuid1()) + "_" + pic_filename
+
+        # save image
+        saver = request.files["profile_pic"]
+
+        # change string to save in the database
+        name_to_update.profile_pic = pic_name
 
         # if the infromation is update successfully, we return back to the users register page
         try:
             db.session.commit()
+
+            saver.save(os.path.join(app.config["UPLOAD_FOLDER"]), pic_name)
+
             flash(" Updated Successfully!")
             return render_template(
                 "dashboard.html", form=form, name_to_update=name_to_update
@@ -513,9 +540,9 @@ def search():
 @app.route("/admin")
 @login_required
 def admin():
-    id = current_user.id  # admin has id == 6
+    id = current_user.id  # admin has id == 1
 
-    if id == 6:
+    if id == 1:
         return render_template("admin.html")
     else:
         flash("Error: Must be admin to access this page!")
@@ -543,6 +570,12 @@ class Users(db.Model, UserMixin):
 
     # user can have many posts. The back reference allow you to access all attribute in this class like poster.username
     posts = db.relationship("Posts", backref="poster")
+
+    # author description
+    about_author = db.Column(db.Text(500), nullable=True)
+
+    # profile pic dir - can't define the size tho.
+    profile_pic = db.Column(db.String(1000), nullable=True)
 
     @property
     def password(self):

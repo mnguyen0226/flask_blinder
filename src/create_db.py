@@ -13,7 +13,7 @@ mydb = mysql.connector.connect(
 my_cursor = mydb.cursor()
 
 # note: "users" is the name of db initialize in main.py (app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:password123@localhost/our_users"). Uncomment to create a db again
-# my_cursor.execute("CREATE DATABASE our_users2")
+# my_cursor.execute("CREATE DATABASE our_users")
 
 my_cursor.execute("SHOW DATABASES")
 for db in my_cursor:

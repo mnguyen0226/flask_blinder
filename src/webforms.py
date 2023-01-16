@@ -4,8 +4,9 @@ from wtforms.validators import DataRequired
 from wtforms.validators import EqualTo
 from wtforms import SubmitField
 from wtforms import StringField
-from wtforms import PasswordField
+from wtforms import PasswordField, TextAreaField
 from wtforms.widgets import TextArea
+from flask_wtf.file import FileField
 from flask_ckeditor import CKEditor, CKEditorField
 
 
@@ -13,7 +14,7 @@ class UserForm(FlaskForm):
     name = StringField("Enter Name", validators=[DataRequired()])
     username = StringField("Enter UserName", validators=[DataRequired()])
     email = StringField("Enter Email", validators=[DataRequired()])
-    fav_color = StringField("Enter Color", validators=[DataRequired()])
+    fav_color = StringField("Enter Color")
 
     # need 2 password 1 for enter, 1 for confirm the same typed password
     password_hash = PasswordField(
@@ -26,6 +27,10 @@ class UserForm(FlaskForm):
     password_hash2 = PasswordField(
         "Confirm Password", validators=[DataRequired()]
     )  # does not exist in the actual database
+
+    about_author = TextAreaField("Enter About Author")
+
+    profile_pic = FileField("Upload Profile Picture")
 
     submit = SubmitField("Submit")
 

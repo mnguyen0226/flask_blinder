@@ -29,6 +29,9 @@
         Slug: {{post.slug}}</br>
         Post Date: {{post.date_posted}}</br>
         Content: {{post.content | safe}}</br>
+        {% if post.poster.about_author %}
+            About Author: {{post.poster.about_author}}</br>
+        {% endif %}
     </div>
     
     </br>
