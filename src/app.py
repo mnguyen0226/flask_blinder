@@ -225,6 +225,7 @@ def update(id):
 # delete the record from the database
 # note that for delete, there is no need for post or get as once we click (aka, access the page), we will delete the record, no
 @app.route("/delete/<int:id>")
+@login_required
 def delete(id):
     user_to_delete = Users.query.get_or_404(id)
     name = None
@@ -232,32 +233,28 @@ def delete(id):
     our_users = Users.query.order_by(Users.date_added)
 
     # # if you did not login to your account then you can't delete your own account
-    # if id != current_user.id:
+    if id == current_user.id:
+        try:
+            # delete from db
+            db.session.delete(user_to_delete)
+            db.session.commit()
+            flash("User Deleted Successfully!")
 
-    #     flash("Access Denied! You have to login to your account to delete")
+            # get users ordered by date
+            our_users = Users.query.order_by(Users.date_added)
 
-    #     return render_template(
-    #         "add_user.html", form=form, name=name, our_users=our_users
-    #     )
+            return render_template(
+                "add_user.html", form=form, name=name, our_users=our_users
+            )
 
-    try:
-        # delete from db
-        db.session.delete(user_to_delete)
-        db.session.commit()
-        flash("User Deleted Successfully!")
-
-        # get users ordered by date
-        our_users = Users.query.order_by(Users.date_added)
-
-        return render_template(
-            "add_user.html", form=form, name=name, our_users=our_users
-        )
-
-    except:
-        flash("Error: Unable to delete user. Try again.")
-        return render_template(
-            "add_user.html", form=form, name=name, our_users=our_users
-        )
+        except:
+            flash("Error: Unable to delete user. Try again.")
+            return render_template(
+                "add_user.html", form=form, name=name, our_users=our_users
+            )
+    else:
+        flash("Error: Sorry, you can't delete that user!")
+        return redirect(url_for("dashboard"))
 
 
 # testing page to test and validate matching input. if match then render user's page.
@@ -462,39 +459,52 @@ def dashboard():
         name_to_update.fav_color = request.form["fav_color"]
         name_to_update.username = request.form["username"]
         name_to_update.about_author = request.form["about_author"]
-        name_to_update.profile_pic = request.files[
-            "profile_pic"
-        ]  # form return the image object but we only want name
 
-        # the two steps below basically convert image file to just get name
-        # get image name
-        pic_filename = secure_filename(name_to_update.profile_pic.filename)
+        # if we update the image, then the commit procedure is different
+        if request.files["profile_pic"]:
+            name_to_update.profile_pic = request.files[
+                "profile_pic"
+            ]  # form return the image object but we only want name
 
-        # set uuid - get random number to get unique name
-        pic_name = str(uuid.uuid1()) + "_" + pic_filename
+            # the two steps below basically convert image file to just get name
+            # get image name
+            pic_filename = secure_filename(name_to_update.profile_pic.filename)
 
-        # save image
-        saver = request.files["profile_pic"]
+            # set uuid - get random number to get unique name
+            pic_name = str(uuid.uuid1()) + "_" + pic_filename
 
-        # change string to save in the database
-        name_to_update.profile_pic = pic_name
+            # save image
+            saver = request.files["profile_pic"]
 
-        # if the infromation is update successfully, we return back to the users register page
-        try:
+            # change string to save in the database
+            name_to_update.profile_pic = pic_name
+
+            # if the infromation is update successfully, we return back to the users register page
+            try:
+                db.session.commit()
+
+                # save the image in the local file
+                saver.save(os.path.join(app.config["UPLOAD_FOLDER"], pic_name))
+
+                flash(" Updated Successfully!")
+                return render_template(
+                    "dashboard.html", form=form, name_to_update=name_to_update
+                )
+
+            # if we can't then stay at the same page and try again
+            except:
+                flash("Error: Can't update. Try again!")
+                return render_template(
+                    "dashboard.html", form=form, name_to_update=name_to_update
+                )
+        # if we don't update the image, then just commit other info
+        else:
             db.session.commit()
-
-            saver.save(os.path.join(app.config["UPLOAD_FOLDER"]), pic_name)
-
             flash(" Updated Successfully!")
             return render_template(
                 "dashboard.html", form=form, name_to_update=name_to_update
             )
-        # if we can't then stay at the same page and try again
-        except:
-            flash("Error: Can't update. Try again!")
-            return render_template(
-                "dashboard.html", form=form, name_to_update=name_to_update
-            )
+
     # GET: if they just go (or refresh), then just render the curretn page
     else:
         return render_template(

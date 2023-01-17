@@ -29,9 +29,32 @@
         Slug: {{post.slug}}</br>
         Post Date: {{post.date_posted}}</br>
         Content: {{post.content | safe}}</br>
-        {% if post.poster.about_author %}
-            About Author: {{post.poster.about_author}}</br>
-        {% endif %}
+
+        <div class='card mb-3'>
+            <div class='row no-gutters'>
+                <div class='col-md-2'>
+                    {% if post.poster.profile_pic %}
+                        <img src="{{url_for('static', filename='images/' + post.poster.profile_pic)}}" width='150' align='left'>
+                    {% else %}
+                        <img src="{{url_for('static', filename='images/default_user.png')}}" width='150' align='left'>
+                    {% endif %}
+                </div>
+                <div class='col-md-10'>
+                    <div class='card-body'>
+                        <h5 class='card-title'>
+                            Author: {{post.poster.name}}</br> 
+                        </h5>
+                        <p>
+                            {% if post.poster.about_author %}
+                                About Author: {{post.poster.about_author}}</br>
+                            {% else %}
+                                About Author: Author has not specified this area yet!
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     </br>

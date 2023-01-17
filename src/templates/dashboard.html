@@ -48,7 +48,11 @@
                                 <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger">Delete Profile</a>
                             </div>
                             <div class="col-4">
-                                <img src="{{url_for('static', filename='images/default_user.png')}}" align='right' width='50%' style="border-radius: 25px;">
+                                {% if current_user.profile_pic %}
+                                    <img src="{{url_for('static', filename='images/' + current_user.profile_pic)}}" align='right' width='50%' style="border-radius: 25px;">
+                                {% else %}
+                                    <img src="{{url_for('static', filename='images/default_user.png')}}" align='right' width='50%' style="border-radius: 25px;">
+                                {% endif %}
                             </div>
                         </div>
                     </div>
