@@ -349,7 +349,7 @@ def edit_post(id):
 
     # if the user fill out the form and send the info back to database
     post_to_update = Posts.query.get_or_404(id)
-    if current_user.id == post_to_update.poster_id:
+    if current_user.id == post_to_update.poster_id or current_user.id == 1:
 
         # POST -> This is when you access the edit page (not thru clicking button)
         if form.validate_on_submit():
@@ -391,7 +391,7 @@ def delete_post(id):
     post_to_delete = Posts.query.get_or_404(id)
 
     # if the current login user id == the id of the blog's author's id
-    if current_user.id == post_to_delete.poster.id:
+    if current_user.id == post_to_delete.poster.id or current_user.id == 1:
 
         try:
             db.session.delete(post_to_delete)
