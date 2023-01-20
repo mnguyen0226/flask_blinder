@@ -200,6 +200,143 @@ def dashboard():
         )
 
 
+# logout
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out!")
+    return redirect(url_for("login"))
+
+
+# create a post
+@app.route("/create-post", methods=["GET", "POST"])
+@login_required
+def create_post():
+    form = PostForm()
+
+    # if the user properly fill out the post
+    if form.validate_on_submit():
+
+        # get logged in user id
+        poster = current_user.id
+
+        # fill out the form
+        post = Posts(
+            title=form.title.data, content=form.content.data, poster_id=poster,
+        )
+
+        # clear form
+        form.title.data = ""
+        form.content.data = ""
+
+        # commit to sql database
+        db.session.add(post)
+        db.session.commit()
+
+        flash("Post submitted successfully!")
+
+    return render_template("create_post.html", form=form)
+
+
+# view all created post
+@app.route("/posts")
+def view_all_posts():
+    posts = Posts.query.order_by(Posts.date_posted)
+    return render_template("view_all_posts.html", posts=posts)
+
+
+# view specific post
+@app.route("/posts/<int:id>")
+def view_post(id):
+    post = Posts.query.get_or_404(id)
+    return render_template("view_post.html", post=post)
+
+
+# update content in blog post
+@app.route("/posts/edit/<int:id>", methods=["GET", "POST"])
+@login_required
+def edit_post(id):
+    form = PostForm()
+
+    post_to_update = Posts.query.get_or_404(id)
+
+    # if login the right person
+    if current_user.id == post_to_update.poster_id:
+
+        if form.validate_on_submit():
+            # update the database
+            post_to_update.title = form.title.data
+            post_to_update.content = form.content.data
+
+            # commit to database
+            db.session.add(post_to_update)
+            db.session.commit()
+
+            flash("Post updated successfully!")
+
+            return redirect(url_for("view_post", id=post_to_update.id))
+
+        # here, the user has login, we just prefill, but not enable to fill form (if not a right person)
+        form.title.data = post_to_update.title
+        form.content.data = post_to_update.content
+        return render_template("edit_post.html", form=form)
+
+    else:
+        flash("Error: You aren't authorized to edit page!")
+        posts = Posts.query.order_by(Posts.date_posted)
+        return render_template("posts.html", posts=posts)
+
+
+# delete post
+@app.route("/posts/delete/<int:id>")
+@login_required
+def delete_post(id):
+    post_to_delete = Posts.query.get_or_404(id)
+
+    # if the current login user id == the id of the blog's author's id
+    if current_user.id == post_to_delete.poster.id:
+
+        try:
+            db.session.delete(post_to_delete)
+            db.session.commit()
+
+            flash("Blog deleted successfully!")
+
+            posts = Posts.query.order_by(Posts.date_posted)
+            return render_template("view_all_posts.html", posts=posts)
+
+        except:
+            flash("Error: Unable to delete blog post. Try again.")
+            return render_template("view_all_posts.html", posts=posts)
+    else:
+        flash("You aren't authorize to delete that post!")
+
+        posts = Posts.query.order_by(Posts.date_posted)
+        return render_template("view_all_posts.html", posts=posts)
+
+
+# basically a replicate of "view all post" after search
+@app.route("/search", methods=["POST"])
+def search():
+    form = SearchForm()
+
+    posts = Posts.query
+
+    # if someone fillout the form
+    if form.validate_on_submit():
+
+        filled_search = form.searched.data
+
+        # query the database
+        posts = posts.filter(Posts.content.like("%" + filled_search + "%"))
+        posts = posts.order_by(Posts.title).all()
+
+        return render_template(
+            "search.html", form=form, filled_search=filled_search, posts=posts
+        )
+
+
 #############################################
 # DATABASES
 #############################################
