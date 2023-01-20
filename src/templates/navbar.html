@@ -1,11 +1,7 @@
 <link rel="stylesheet" href="{{url_for('static', filename='styles/navbar.css')}}">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/">
-        <div class="logo-image">
-            <img src="static/images/y_combinator_logo.png" style="width: 75%" class="rounded">
-        </div>
-  </a>
+    <a class="navbar-brand" href="/"><b>Hacker News</b></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -13,29 +9,29 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('view_all_posts')}}"><b>News</b></a>
+                <a class="nav-link" href="{{url_for('view_all_posts')}}">News</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('create_post')}}"><b>Create Post</b></a>
+                <a class="nav-link" href="{{url_for('create_post')}}">Create Post</a>
             </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('dashboard')}}"><b>Dashboard</b></a>
+                <a class="nav-link" href="{{url_for('dashboard')}}">Dashboard</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('logout')}}"><b>Logout</b></a>
+                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
             </li>
             {% if current_user.id == 3 %}
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('admin')}}"><b>Admin</b></a>
+                <a class="nav-link" href="{{url_for('admin')}}">Admin</a>
             </li>
         {% endif %}
             {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for("sign_up")}}"><b>Sign Up</b></a>
+                <a class="nav-link" href="{{url_for("sign_up")}}">Sign Up</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('login')}}"><b>Login</b></a>
+                <a class="nav-link" href="{{url_for('login')}}">Login</a>
             </li>
             {% endif %}
         </ul>
