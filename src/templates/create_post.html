@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Create Blog{% endblock %}
+{% block title %}Create Post{% endblock %}
 
 {% block content %}
 
@@ -23,7 +23,7 @@
 
     <div class="card">
         <div class="card-header">
-          <h1>Add Blog</h1>
+          <h1>Add Post</h1>
         </div>
         <div class="card-body">
             <form method="POST">
@@ -32,7 +32,7 @@
                 {{form.title.label(class="form-label")}}
                 {{form.title(class="form-control")}}
                 </br>
-                
+
                 {{form.content.label(class="form-label")}}
                 {{form.content(class="form-control")}}
                 </br>
