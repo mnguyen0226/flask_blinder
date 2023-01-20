@@ -54,6 +54,44 @@
                 <div>
                     <span id="likes-count-{{post.id}}">{{post.likes | length}}</span>
                 </div>
+                </br>
+                <div class="collapse" id="comments-{{post.id}}">
+                    <div class="card">
+                        <div class="card-body" id="comments-expanded-{{post.id}}">
+                            
+                            {% for comment in post.comments %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                
+                                <div>
+                                <a href="/dashboard/{{comment.user.id}}">{{comment.user.username}}</a>: {{comment.content}}
+                                </div>
+
+                                <div>
+                                    <small class="text-muted">{{comment.date_created}}</small>
+                                    {% if current_user.id == 3 or post.poster_id == current_user.id or comment.post_id == current_user.id%}
+                                        <button type="button" class="btn btn-danger btn-sm"><a href="{{url_for('delete_comment', id=comment.id)}}">Delete Comment</a></button>
+                                    {% endif %}   
+                                </div> 
+                            </div>  
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <p class="card-text">
+                    {% if post.comments | length > 0 %}
+                    <a data-toggle="collapse" href="#comments-{{post.id}}" role="button">
+                        <small>View {{post.comments | length}} Comments</small>
+                    </a>
+                    {% else %}
+                        <small class="text-muted">No Comments</small>
+                    {% endif %}
+                </p>
+
+                <form class="input-group mb-3" method="POST" action="/create-comment/{{post.id}}">
+                    <input type="text" id="text" name="text" class="form-control" placeholder="Comment here."/>
+                    <button type="submit" class="btn btn-primary">Comment</button>
+                </form>
+
             </div>
             {% endfor %}
         </div>

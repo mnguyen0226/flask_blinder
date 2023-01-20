@@ -407,6 +407,7 @@ def view_dashboard(id):
     return render_template("view_user.html", user=user)
 
 
+# like posts
 @app.route("/like-post/<post_id>", methods=["POST"])
 @login_required
 def like(post_id):
@@ -435,8 +436,58 @@ def like(post_id):
     )
 
 
+# add comment to post
+@app.route("/create-comment/<post_id>", methods=["POST"])
+@login_required
+def create_comment(post_id):
+    text = request.form.get("text")
+
+    # if can't get comment (for some reason)
+    if not text:
+        flash("Error: Comment can't be enter!")
+
+    # if can, then grab post and update db
+    else:
+        post = Posts.query.filter_by(id=post_id)
+        if post:
+            comment = Comment(content=text, author=current_user.id, post_id=post_id)
+            db.session.add(comment)
+            db.session.commit()
+        else:
+            flash("Error: Post does not exist!")
+
+    return redirect(url_for("view_all_posts"))
+
+# delete post
+@app.route("/delete-comment/<int:id>")
+@login_required
+def delete_comment(id):
+    comment_to_delete = Comment.query.get_or_404(id)
+
+    # if the current login user id == the id of the blog's author's id
+    if current_user.id == comment_to_delete.user.id or current_user.id == 3:
+
+        try:
+            db.session.delete(comment_to_delete)
+            db.session.commit()
+
+            flash("Comment deleted successfully!")
+
+            return redirect(url_for("view_all_posts"))
+
+        except:
+            flash("Error: Unable to delete comment. Try again.")
+            return redirect(url_for("view_all_posts"))
+    else:
+        flash("You aren't authorize to delete comment!")
+        return redirect(url_for("view_all_posts"))
+
 #############################################
 # DATABASES
+# One post has many comments, likes.
+# One user has many comments, likes, posts.
+# Each comment has 1 user and 1 post associate with it.
+# Each like has 1 user and 1 post associate with it.
 #############################################
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -446,7 +497,7 @@ class Users(db.Model, UserMixin):
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     hashed_password = db.Column(db.String(128))
 
-    # one-to-many relationship
+    # one-to-many relationship. from post table we can access user via "poster"
     posts = db.relationship("Posts", backref="poster")
 
     # author description
@@ -455,8 +506,11 @@ class Users(db.Model, UserMixin):
     # profile pic dir - can't define the size tho.
     profile_pic = db.Column(db.String(1000), nullable=True)
 
-    # many-to-many relationship
+    # one-to-many relationship. from like table we can access user via "user"
     likes = db.relationship("Like", backref="user", passive_deletes=True)
+
+    # one-to-many relationship. from comment table we can access user via "user"
+    comments = db.relationship("Comment", backref="user", passive_deletes=True)
 
     # overwrite getter
     @property
@@ -486,17 +540,38 @@ class Posts(db.Model):
     # connect secondary key to primary key
     poster_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
-    # many-to-many relationship
+    # one-to-many relationship. from like table we can access post via "post"
     likes = db.relationship("Like", backref="post", passive_deletes=True)
+
+    # one-to-many relationship. from comment table we can access post via "post"
+    comments = db.relationship("Comment", backref="post", passive_deletes=True)
 
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    # similar to poster_id in Posts
+    # one-to-many relationship
     author = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
+
+    # one-to-many relationship
+    post_id = db.Column(
+        db.Integer, db.ForeignKey("posts.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(200))
+    date_created = db.Column(db.DateTime, default=datetime.utcnow())
+
+    # one-to-many relationship
+    author = db.Column(
+        db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+
+    # one-to-many relationship
     post_id = db.Column(
         db.Integer, db.ForeignKey("posts.id", ondelete="CASCADE"), nullable=False
     )
