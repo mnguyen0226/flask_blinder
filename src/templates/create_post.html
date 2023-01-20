@@ -8,6 +8,8 @@
         <img src="../static/images/hacker_news_logo.jpeg" style="width: 50%" class="rounded">
     </div>
 
+    </br>
+
     <div>
         {% for message in get_flashed_messages() %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -23,7 +25,7 @@
 
     <div class="card">
         <div class="card-header">
-          <h1>Add Post</h1>
+          <h1>Create Post</h1>
         </div>
         <div class="card-body">
             <form method="POST">

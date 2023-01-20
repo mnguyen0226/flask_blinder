@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Sign Up{% endblock %}
+{% block title %}News{% endblock %}
 
 {% block content %}
 
     <div style="text-align: center">
         <img src="../static/images/hacker_news_logo.jpeg" style="width: 50%" class="rounded">
     </div>
+
+    </br>
 
     <div>
         {% for message in get_flashed_messages() %}
@@ -23,7 +25,7 @@
     
     <div class="card">
         <div class="card-header">
-          <h1>All Post</h1>
+          <h1>Latest News</h1>
         </div>
         <div class="card-body">
             {% for post in posts %}

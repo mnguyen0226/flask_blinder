@@ -17,10 +17,10 @@
             </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-                <a class="nav-link" href="#"><b>Dashboard</b></a>
+                <a class="nav-link" href="{{url_for('dashboard')}}"><b>Dashboard</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"><b>Logout</b></a>
+                <a class="nav-link" href="{{url_for('logout')}}"><b>Logout</b></a>
             </li>
             {% else %}
             <li class="nav-item">
@@ -32,7 +32,7 @@
             {% endif %}
 
             <li class="nav-item">
-                <a class="nav-link" href="#"><b>Create Post</b></a>
+                <a class="nav-link" href="{{url_for('create_post')}}"><b>Create Post</b></a>
             </li>
         </ul>
         <form method="POST" action="{{url_for('search')}}" class="form-inline my-2 my-lg-0">
