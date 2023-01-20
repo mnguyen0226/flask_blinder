@@ -22,6 +22,7 @@
     </div>
 
     </br>
+    {% if current_user.is_authenticated %}
 
     <div class="card">
         <div class="card-header">
@@ -48,5 +49,10 @@
 
       {{ ckeditor.load() }}
       {{ ckeditor.config(name='content')}}
+
+
+    {% else %}
+      <a href="{{url_for('login')}}">Login Here</a>
+    {% endif %}
 
 {% endblock %}

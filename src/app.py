@@ -190,11 +190,11 @@ def dashboard():
         name_to_update.username = request.form["username"]
         name_to_update.about_author = request.form["about_author"]
         
-        # if we update the image, then the commit procedure is different
+        # if there is a request for new image, update the database with image
         if request.files["profile_pic"]:
-            name_to_update.profile_pic = request.files[
-                "profile_pic"
-            ]  # form return the image object but we only want name
+            
+            # get the name of the image
+            name_to_update.profile_pic = request.files["profile_pic"] 
 
             # the two steps below basically convert image file to just get name
             # get image name
@@ -227,6 +227,7 @@ def dashboard():
                 return render_template(
                     "dashboard.html", form=form, name_to_update=name_to_update
                 )
+                
         # if we don't update the image, then just commit other info
         else:
             db.session.commit()
