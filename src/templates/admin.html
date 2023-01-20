@@ -4,27 +4,50 @@
 
 {% block content %}
     <h1>Admin Page</h1>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles/admin.css')}}">
 
-    <div class="card">
-        <div class="card-header">
-          <h1>Users Lists</h1>
+    </br>
+    
+    <div>
+        <link rel="stylesheet" href="{{url_for('static', filename='css/admin_style.css')}}">
+    
+        <table class="table table-hover table-bordered table-striped" style="text-align: center">
+        
+        <div class="card-deck row">
+    
+        {% for user in users_list %}
+    
+            <div class="col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <h5 class='card-title'>
+                                    {% if user.id == current_user.id %}
+                                        <a href="{{url_for('dashboard')}}">{{user.name}}</a></br> 
+                                    {% else %}
+                                        <a href="{{url_for('view_dashboard', id=user.id)}}">{{user.name}}</a></br> 
+                                    {% endif %}
+                                </h5>  
+                            </li>
+                            <li class="list-group-item">
+                                <p class="card-text">- <b>ID:</b> {{user.id}}.</p>
+                                <p class="card-text">- <b>Date:</b> {{user.date_added}}.</p>
+                                <p class="card-text">- <b>Username:</b> {{user.username}}.</p>
+                                <p class="card-text">- <b>Email:</b> {{user.email}}.</p>
+                                <p class="card-text">- <b>Hashed Password:</b> <i>{{user.hashed_password}}</i>.</p>
+                                <a href="{{url_for('delete', id=user.id)}}" class="btn btn-danger">Delete</a> 
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    
+        {% endfor %}
+    
         </div>
-        <div class="card-body">
-            {% for user in users_list %}
-            <tr>
-                <td>
-                    ID: {{user.id}}
-                    - Date: {{user.date_added}} 
-                    - Name: {{user.name}}
-                    - Username: {{user.username}}
-                    - Email: {{user.email}}
-                    - Hashed Password{{user.hashed_password}}
-                    - <a href="{{url_for("delete", id=user.id)}}">Delete Account</a>
-                </td>
-            </tr>
-            </br></br>
-            {% endfor %}
-        </div>
+    
+        </table>
     </div>
 
 {% endblock %}
