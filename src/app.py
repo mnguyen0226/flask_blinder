@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
@@ -327,7 +327,7 @@ def edit_post(id):
     else:
         flash("Error: You aren't authorized to edit page!")
         posts = Posts.query.order_by(Posts.date_posted)
-        return render_template("posts.html", posts=posts)
+        return render_template("view_post.html", posts=posts)
 
 
 # delete post
@@ -400,6 +400,34 @@ def view_dashboard(id):
     return render_template("view_user.html", user=user)
 
 
+@app.route("/like-post/<post_id>", methods=["POST"])
+@login_required
+def like(post_id):
+    post = Posts.query.filter_by(id=post_id).first()
+
+    # get the lke from the current user and all likes from other post that he/she likes
+    like = Like.query.filter_by(author=current_user.id, post_id=post_id).first()
+
+    if not post:
+        return jsonify({"error": "post does not exist!"}, 400)  # 400 = bad request
+    elif like:
+        db.session.delete(like)
+        db.session.commit()
+    else:
+        like = Like(author=current_user.id, post_id=post_id)
+        db.session.add(like)
+        db.session.commit()
+
+    # send the json to js file
+    # return redirect(url_for("view_all_posts.html"))
+    return jsonify(
+        {
+            "likes": len(post.likes),
+            "liked": current_user.id in map(lambda x: x.author, post.likes),
+        }
+    )
+
+
 #############################################
 # DATABASES
 #############################################
@@ -419,6 +447,9 @@ class Users(db.Model, UserMixin):
 
     # profile pic dir - can't define the size tho.
     profile_pic = db.Column(db.String(1000), nullable=True)
+
+    # many-to-many relationship
+    likes = db.relationship("Like", backref="user", passive_deletes=True)
 
     # overwrite getter
     @property
@@ -447,6 +478,21 @@ class Posts(db.Model):
 
     # connect secondary key to primary key
     poster_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    # many-to-many relationship
+    likes = db.relationship("Like", backref="post", passive_deletes=True)
+
+
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    # similar to poster_id in Posts
+    author = db.Column(
+        db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    post_id = db.Column(
+        db.Integer, db.ForeignKey("posts.id", ondelete="CASCADE"), nullable=False
+    )
 
 
 if __name__ == "__main__":
