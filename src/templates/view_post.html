@@ -37,7 +37,11 @@
                 <div class='col-md-10'>
                     <div class='card-body'>
                         <h5 class='card-title'>
-                            Author: {{post.poster.name}}</br> 
+                            {% if post.poster.id == current_user.id %}
+                                Author: <a href="{{url_for('dashboard')}}">{{post.poster.name}}</a></br> 
+                            {% else %}
+                                Author: <a href="{{url_for('view_dashboard', id=post.poster.id)}}">{{post.poster.name}}</a></br> 
+                            {% endif %}
                         </h5>
                         <p>
                             {% if post.poster.about_author %}

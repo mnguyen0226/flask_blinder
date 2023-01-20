@@ -61,6 +61,7 @@ def base_link_form():
     form = SearchForm()
     return dict(form=form)
 
+
 #############################################
 # ROUTES
 #############################################
@@ -80,9 +81,6 @@ def page_not_found(e):
 @app.route("/sign_up", methods=["GET", "POST"])
 def sign_up():
     form = UserForm()
-
-    # TODO: move this list to admin page
-    users_list = Users.query.order_by(Users.date_added)
 
     # post request
     if request.method == "POST":
@@ -119,35 +117,36 @@ def sign_up():
             form.password_create.data = ""
             form.password_confirm.data = ""
 
-        # update the new database
-        users_list = Users.query.order_by(Users.date_added)
-        return render_template("sign_up.html", form=form, users_list=users_list)
+        return render_template("sign_up.html", form=form)
 
     # get request
     else:
-        return render_template("sign_up.html", form=form, users_list=users_list)
+        return render_template("sign_up.html", form=form)
 
 
 @app.route("/delete/<int:id>")
 def delete(id):
-    # get user from id
-    user_to_delete = Users.query.get_or_404(id)
     form = UserForm()
 
+    # get user from id
+    user_to_delete = Users.query.get_or_404(id)
+
+    # from the user, get all the ids of the post
+    posts_to_delete = Posts.query.filter(Posts.poster_id.like(id)).all()
+
     try:
+        for post in posts_to_delete:
+            db.session.delete(post)
         db.session.delete(user_to_delete)
         db.session.commit()
         flash("User deleted successfully!")
-
-        # update user list
-        users_list = Users.query.order_by(Users.date_added)
-        return render_template("sign_up.html", form=form, users_list=users_list)
+        return render_template("sign_up.html", form=form)
 
     except:
-        flash("Error: Unable to delete user as the user does not exist!")
-
-        users_list = Users.query.order_by(Users.date_added)
-        return render_template("sign_up.html", form=form, users_list=users_list)
+        flash(
+            "Error: Unable to delete user as the user does not exist or error in access posts!"
+        )
+        return render_template("sign_up.html", form=form)
 
 
 # login
@@ -182,19 +181,19 @@ def dashboard():
     form = UserForm()
     id = current_user.id
     name_to_update = Users.query.get_or_404(id)
-    
+
     # post
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
         name_to_update.username = request.form["username"]
         name_to_update.about_author = request.form["about_author"]
-        
+
         # if there is a request for new image, update the database with image
         if request.files["profile_pic"]:
-            
+
             # get the name of the image
-            name_to_update.profile_pic = request.files["profile_pic"] 
+            name_to_update.profile_pic = request.files["profile_pic"]
 
             # the two steps below basically convert image file to just get name
             # get image name
@@ -227,7 +226,7 @@ def dashboard():
                 return render_template(
                     "dashboard.html", form=form, name_to_update=name_to_update
                 )
-                
+
         # if we don't update the image, then just commit other info
         else:
             db.session.commit()
@@ -241,6 +240,7 @@ def dashboard():
         return render_template(
             "dashboard.html", form=form, name_to_update=name_to_update
         )
+
 
 # logout
 @app.route("/logout")
@@ -337,7 +337,7 @@ def delete_post(id):
     post_to_delete = Posts.query.get_or_404(id)
 
     # if the current login user id == the id of the blog's author's id
-    if current_user.id == post_to_delete.poster.id:
+    if current_user.id == post_to_delete.poster.id or current_user.id == 3:
 
         try:
             db.session.delete(post_to_delete)
@@ -378,17 +378,27 @@ def search():
             "search.html", form=form, filled_search=filled_search, posts=posts
         )
 
+
 # set up admin page
 @app.route("/admin")
 @login_required
 def admin():
     id = current_user.id  # admin has id == 1
+    users_list = Users.query.order_by(Users.date_added)
 
     if id == 3:
-        return render_template("admin.html")
+        return render_template("admin.html", users_list=users_list)
     else:
         flash("Error: Must be admin to access this page!")
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard"), users_list=users_list)
+
+
+# view specific post
+@app.route("/dashboard/<int:id>")
+def view_dashboard(id):
+    user = Users.query.get_or_404(id)
+    return render_template("view_user.html", user=user)
+
 
 #############################################
 # DATABASES

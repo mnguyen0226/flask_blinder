@@ -58,28 +58,4 @@
         </div>
       </div>
 
-    </br></br>
-
-    <div class="card">
-        <div class="card-header">
-          <h1>Signed Up Users Lists</h1>
-        </div>
-        <div class="card-body">
-            {% for user in users_list %}
-            <tr>
-                <td>
-                    ID: {{user.id}}
-                    - Date: {{user.date_added}} 
-                    - Name: {{user.name}}
-                    - Username: {{user.username}}
-                    - Email: {{user.email}}
-                    - Hashed Password{{user.hashed_password}}
-                    - <a href="{{url_for("delete", id=user.id)}}">Delete Account</a>
-                </td>
-            </tr>
-            </br></br>
-            {% endfor %}
-        </div>
-      </div>
-
 {% endblock %}

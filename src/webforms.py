@@ -17,11 +17,11 @@ class UserForm(FlaskForm):
         ],
     )
     password_confirm = PasswordField("Confirm Password", validators=[DataRequired()])
-    
+
     about_author = TextAreaField("Enter About Author")
 
     profile_pic = FileField("Upload Profile Picture")
-    
+
     submit = SubmitField("Submit")
 
 
