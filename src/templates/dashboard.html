@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+    <div style="text-align: center">
+        <img src="../static/images/hacker_news_logo.jpeg" style="width: 50%" class="rounded">
+    </div>
+
+    <div>
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+</br>
+
+<div class="card">
+    <div class="card-header">
+      <h1>User Dashboard</h1>
+    </div>
+    <div class="card-body">
+        <strong>Name: </strong>{{current_user.name}}</br></br>
+        <strong>Username: </strong>{{current_user.username}}</br></br>
+        <strong>Email: </strong>{{current_user.email}}</br></br>
+        <strong>Date Joined: </strong>{{current_user.date_added}}</br></br>
+        <div>
+          <a href="{{url_for('logout')}}" class="btn btn-primary">Logout</a>&nbsp
+          <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger" >Delete Account</a>
+        </div>
+    </div>
+  </div>
+
+</br>
+
+<div class="card">
+    <div class="card-header">
+      <h1>Update Profile</h1>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {{form.hidden_tag()}}
+
+            {{form.name.label(class="form-label")}}
+            {{form.name(class="form-control", value=name_to_update.name)}}
+            </br>
+
+            {{form.username.label(class="form-label")}}
+            {{form.username(class="form-control", value=name_to_update.username)}}
+            </br>
+
+            {{form.email.label(class="form-label")}}
+            {{form.email(class="form-control", value=name_to_update.email)}}
+            </br>
+
+            {{form.submit(class="btn btn-primary")}}
+            
+        </form>
+
+    </div>
+  </div>
+{% endblock %}
