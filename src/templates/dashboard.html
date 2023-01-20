@@ -28,14 +28,30 @@
       <h1>User Dashboard</h1>
     </div>
     <div class="card-body">
-        <strong>Name: </strong>{{current_user.name}}</br></br>
-        <strong>Username: </strong>{{current_user.username}}</br></br>
-        <strong>Email: </strong>{{current_user.email}}</br></br>
-        <strong>Date Joined: </strong>{{current_user.date_added}}</br></br>
-        <div>
-          <a href="{{url_for('logout')}}" class="btn btn-primary">Logout</a>&nbsp
-          <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger" >Delete Account</a>
+      <p class="card-text">
+        <div class='container'>
+          <div class='row'>
+            <div class='col-8'>
+              <strong>Name: </strong>{{current_user.name}}</br></br>
+              <strong>Username: </strong>{{current_user.username}}</br></br>
+              <strong>Email: </strong>{{current_user.email}}</br></br>
+              <strong>Date Joined: </strong>{{current_user.date_added}}</br></br>
+              <strong>About Author: </strong>{{current_user.about_author}}</br></br>
+              <div>
+                <a href="{{url_for('logout')}}" class="btn btn-primary">Logout</a>&nbsp
+                <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger" >Delete Account</a>
+              </div>
+            </div>
+            <div class="col-4">
+              {% if current_user.profile_pic %}
+                  <img src="{{url_for('static', filename='user_images/' + current_user.profile_pic)}}" align='right' width='50%' style="border-radius: 25px;">
+              {% else %}
+                  <img src="{{url_for('static', filename='user_images/reddit_default.png')}}" align='right' width='50%' style="border-radius: 25px;">
+              {% endif %}
+            </div>
+          </div>
         </div>
+      </p>
     </div>
   </div>
 
@@ -46,25 +62,31 @@
       <h1>Update Profile</h1>
     </div>
     <div class="card-body">
-        <form method="POST">
-            {{form.hidden_tag()}}
+      <form action="/dashboard" method="POST" enctype="multipart/form-data">
+        {{form.hidden_tag()}}
 
-            {{form.name.label(class="form-label")}}
-            {{form.name(class="form-control", value=name_to_update.name)}}
-            </br>
+        {{form.name.label(class="form-label")}}
+        {{form.name(class="form-control", value=name_to_update.name)}}
+        </br>
 
-            {{form.username.label(class="form-label")}}
-            {{form.username(class="form-control", value=name_to_update.username)}}
-            </br>
+        {{form.username.label(class="form-label")}}
+        {{form.username(class="form-control", value=name_to_update.username)}}
+        </br>
 
-            {{form.email.label(class="form-label")}}
-            {{form.email(class="form-control", value=name_to_update.email)}}
-            </br>
+        {{form.email.label(class="form-label")}}
+        {{form.email(class="form-control", value=name_to_update.email)}}
+        </br>
 
-            {{form.submit(class="btn btn-primary")}}
-            
-        </form>
+        {{form.about_author.label(class="form-label")}}
+        <textarea name="about_author" class="form-control">{{name_to_update.about_author}}</textarea>
+        </br>
 
+        {{form.profile_pic.label(class="form-label")}}
+        {{form.profile_pic(class="form-control", value=name_to_update.profile_pic)}}
+        </br>
+
+        {{form.submit(class="btn btn-primary")}}
+      </form>
     </div>
   </div>
 {% endblock %}

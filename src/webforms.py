@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, EqualTo
-from wtforms import SubmitField, StringField, PasswordField
+from wtforms import SubmitField, StringField, PasswordField, TextAreaField
 from flask_ckeditor import CKEditorField
+from flask_wtf.file import FileField
 
 # sign up form
 class UserForm(FlaskForm):
@@ -16,6 +17,11 @@ class UserForm(FlaskForm):
         ],
     )
     password_confirm = PasswordField("Confirm Password", validators=[DataRequired()])
+    
+    about_author = TextAreaField("Enter About Author")
+
+    profile_pic = FileField("Upload Profile Picture")
+    
     submit = SubmitField("Submit")
 
 

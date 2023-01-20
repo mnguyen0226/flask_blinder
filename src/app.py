@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from flask_login import (
     UserMixin,
     login_user,
@@ -13,7 +14,8 @@ from flask_login import (
 )
 from flask_ckeditor import CKEditor
 from webforms import UserForm, LoginForm, PostForm, SearchForm
-
+import uuid as uuid
+import os
 
 #############################################
 # SET UP
@@ -25,7 +27,12 @@ app = Flask(__name__)
 app.config[
     "SQLALCHEMY_DATABASE_URI"
 ] = "mysql+pymysql://root:password123@localhost/flask_hacker_news"
+
 app.config["SECRET_KEY"] = "secret key"
+
+# set image update (must put here)
+UPLOAD_FOLDER = "static/user_images/"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # create databse
 db = SQLAlchemy(app)
@@ -53,7 +60,6 @@ def load_user(user_id):
 def base_link_form():
     form = SearchForm()
     return dict(form=form)
-
 
 #############################################
 # ROUTES
@@ -176,29 +182,64 @@ def dashboard():
     form = UserForm()
     id = current_user.id
     name_to_update = Users.query.get_or_404(id)
-
+    
     # post
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
         name_to_update.username = request.form["username"]
+        name_to_update.about_author = request.form["about_author"]
+        
+        # if we update the image, then the commit procedure is different
+        if request.files["profile_pic"]:
+            name_to_update.profile_pic = request.files[
+                "profile_pic"
+            ]  # form return the image object but we only want name
 
-        try:
+            # the two steps below basically convert image file to just get name
+            # get image name
+            pic_filename = secure_filename(name_to_update.profile_pic.filename)
+
+            # set uuid - get random number to get unique name
+            pic_name = str(uuid.uuid1()) + "_" + pic_filename
+
+            # save image
+            saver = request.files["profile_pic"]
+
+            # change string to save in the database
+            name_to_update.profile_pic = pic_name
+
+            # if the infromation is update successfully, we return back to the users register page
+            try:
+                db.session.commit()
+
+                # save the image in the local file
+                saver.save(os.path.join(app.config["UPLOAD_FOLDER"], pic_name))
+
+                flash(" Updated Successfully!")
+                return render_template(
+                    "dashboard.html", form=form, name_to_update=name_to_update
+                )
+
+            # if we can't then stay at the same page and try again
+            except:
+                flash("Error: Can't update. Try again!")
+                return render_template(
+                    "dashboard.html", form=form, name_to_update=name_to_update
+                )
+        # if we don't update the image, then just commit other info
+        else:
             db.session.commit()
-            flash("Profile updated successfully!")
+            flash(" Updated Successfully!")
             return render_template(
                 "dashboard.html", form=form, name_to_update=name_to_update
             )
-        except:
-            flash("Error: Can't update. Try again!")
-            return render_template(
-                "dashboard.html", form=form, name_to_update=name_to_update
-            )
+
+    # GET: if they just go (or refresh), then just render the curretn page
     else:
         return render_template(
             "dashboard.html", form=form, name_to_update=name_to_update
         )
-
 
 # logout
 @app.route("/logout")
@@ -361,6 +402,12 @@ class Users(db.Model, UserMixin):
 
     # one-to-many relationship
     posts = db.relationship("Posts", backref="poster")
+
+    # author description
+    about_author = db.Column(db.Text(500), nullable=True)
+
+    # profile pic dir - can't define the size tho.
+    profile_pic = db.Column(db.String(1000), nullable=True)
 
     # overwrite getter
     @property
