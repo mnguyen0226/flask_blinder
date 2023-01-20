@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+
+    <div style="text-align: center">
+        <img src="../static/images/hacker_news_logo.jpeg" style="width: 50%" class="rounded">
+    </div>
+    
+    </br>
+
+    <div>
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    </br>
+
+    <div class="card">
+        <div class="card-header">
+          <h1>Sign Up</h1>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {{form.hidden_tag()}}
+
+                {{form.name.label(class="form-label")}}
+                {{form.name(class="form-control")}}
+                </br>
+
+                {{form.username.label(class="form-label")}}
+                {{form.username(class="form-control")}}
+                </br>
+
+                {{form.email.label(class="form-label")}}
+                {{form.email(class="form-control")}}
+                </br>
+
+                {{form.password_create.label(class="form-label")}}
+                {{form.password_create(class="form-control")}}
+                </br>
+
+                {{form.password_confirm.label(class="form-label")}}
+                {{form.password_confirm(class="form-control")}}
+                </br>
+
+                {{form.submit(class="btn btn-primary")}}
+
+            </form>
+
+        </div>
+      </div>
+
+    </br></br>
+
+    <div class="card">
+        <div class="card-header">
+          <h1>Signed Up Users Lists</h1>
+        </div>
+        <div class="card-body">
+            {% for user in users_list %}
+            <tr>
+                <td>
+                    ID: {{user.id}}
+                    - Date: {{user.date_added}} 
+                    - Name: {{user.name}}
+                    - Username: {{user.username}}
+                    - Email: {{user.email}}
+                    - Hashed Password{{user.hashed_password}}
+                    - <a href="{{url_for("delete", id=user.id)}}">Delete Account</a>
+                </td>
+            </tr>
+            </br></br>
+            {% endfor %}
+        </div>
+      </div>
+
+{% endblock %}
