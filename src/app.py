@@ -336,6 +336,17 @@ def search():
             "search.html", form=form, filled_search=filled_search, posts=posts
         )
 
+# set up admin page
+@app.route("/admin")
+@login_required
+def admin():
+    id = current_user.id  # admin has id == 1
+
+    if id == 3:
+        return render_template("admin.html")
+    else:
+        flash("Error: Must be admin to access this page!")
+        return redirect(url_for("dashboard"))
 
 #############################################
 # DATABASES

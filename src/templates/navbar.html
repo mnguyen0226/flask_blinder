@@ -15,6 +15,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('view_all_posts')}}"><b>News</b></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('create_post')}}"><b>Create Post</b></a>
+            </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('dashboard')}}"><b>Dashboard</b></a>
@@ -22,6 +25,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('logout')}}"><b>Logout</b></a>
             </li>
+            {% if current_user.id == 3 %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('admin')}}"><b>Admin</b></a>
+            </li>
+        {% endif %}
             {% else %}
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for("sign_up")}}"><b>Sign Up</b></a>
@@ -30,10 +38,6 @@
                 <a class="nav-link" href="{{url_for('login')}}"><b>Login</b></a>
             </li>
             {% endif %}
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{url_for('create_post')}}"><b>Create Post</b></a>
-            </li>
         </ul>
         <form method="POST" action="{{url_for('search')}}" class="form-inline my-2 my-lg-0">
             {{ form.hidden_tag() }}
