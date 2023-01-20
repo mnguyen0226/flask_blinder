@@ -284,7 +284,14 @@ def create_post():
 # view all created post
 @app.route("/posts")
 def view_all_posts():
-    posts = Posts.query.order_by(Posts.date_posted)
+    # posts = Posts.query.order_by(Posts.date_posted)
+
+    # reference: https://stackoverflow.com/questions/20290462/sqlalchemy-query-join-on-relationship-and-order-by-count
+    posts = (
+        Posts.query.outerjoin(Like)
+        .group_by(Posts.id)
+        .order_by(db.func.count(Like.id).desc())
+    )
     return render_template("view_all_posts.html", posts=posts)
 
 

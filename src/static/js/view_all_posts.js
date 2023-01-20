@@ -14,5 +14,5 @@ function like(postId){
         likeButton.className = "far fa-thumbs-up";
       }
     })
-    .catch((e) => alert("Could not like post."));
+    .catch((e) => alert("Could not like post. You need to Login!"));
 }
