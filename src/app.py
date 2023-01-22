@@ -26,7 +26,7 @@ app = Flask(__name__)
 # config mysql
 app.config[
     "SQLALCHEMY_DATABASE_URI"
-] = "mysql+pymysql://root:password123@localhost/flask_hacker_news"
+] = "mysql+pymysql://root:password123@localhost/flask_y"
 
 app.config["SECRET_KEY"] = "secret key"
 
@@ -344,7 +344,7 @@ def delete_post(id):
     post_to_delete = Posts.query.get_or_404(id)
 
     # if the current login user id == the id of the blog's author's id
-    if current_user.id == post_to_delete.poster.id or current_user.id == 3:
+    if current_user.id == post_to_delete.poster.id or current_user.id == 1:
 
         try:
             db.session.delete(post_to_delete)
@@ -393,7 +393,7 @@ def admin():
     id = current_user.id  # admin has id == 1
     users_list = Users.query.order_by(Users.date_added)
 
-    if id == 3:
+    if id == 1:
         return render_template("admin.html", users_list=users_list)
     else:
         flash("Error: Must be admin to access this page!")
@@ -467,7 +467,7 @@ def delete_comment(id):
     post_id = comment_to_delete.post_id
 
     # if the current login user id == the id of the blog's author's id
-    if current_user.id == comment_to_delete.user.id or current_user.id == 3:
+    if current_user.id == comment_to_delete.user.id or current_user.id == 1:
 
         try:
             db.session.delete(comment_to_delete)

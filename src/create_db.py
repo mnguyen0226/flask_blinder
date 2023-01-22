@@ -12,7 +12,7 @@ mydb = mysql.connector.connect(
 my_cursor = mydb.cursor()
 
 # create new database
-my_cursor.execute("CREATE DATABASE flask_hacker_news")
+my_cursor.execute("CREATE DATABASE flask_y")
 
 # show all database
 my_cursor.execute("SHOW DATABASES")
