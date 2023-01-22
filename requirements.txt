@@ -1,11 +1,42 @@
 alembic==1.9.1
-Flask==2.2.2
-Flask_CKEditor==0.4.6
-Flask_Login==0.6.2
-Flask_Migrate==4.0.1
-flask_sqlalchemy==3.0.2
-Flask_WTF==1.0.1
-mysql_connector_repackaged==0.3.1
+blinker==1.5
+cachelib==0.9.0
+certifi @ file:///C:/b/abs_85o_6fm0se/croot/certifi_1671487778835/work/certifi
+cffi==1.15.1
+charset-normalizer==2.1.1
+click @ file:///C:/ci/click_1646056762388/work
+colorama @ file:///C:/Windows/TEMP/abs_9439aeb1-0254-449a-96f7-33ab5eb17fc8apleb4yn/croots/recipe/colorama_1657009099097/work
+cryptography==39.0.0
+cs50==9.2.4
+docopt==0.6.2
+Flask @ file:///C:/b/abs_ef16l83sif/croot/flask_1671217367534/work
+Flask-CKEditor==0.4.6
+Flask-Login==0.6.2
+Flask-Mail==0.9.0
+Flask-Migrate==4.0.1
+Flask-Session==0.4.0
+Flask-SQLAlchemy==3.0.2
+Flask-WTF==1.0.1
+greenlet==2.0.1
+gunicorn==20.1.0
+idna==3.4
+itsdangerous @ file:///tmp/build/80754af9/itsdangerous_1621432558163/work
+Jinja2 @ file:///C:/b/abs_7cdis66kl9/croot/jinja2_1666908141852/work
+Mako==1.2.4
+MarkupSafe @ file:///C:/ci/markupsafe_1654508036328/work
+mysql-connector==2.2.9
+mysql-connector-python==8.0.31
+pipreqs==0.4.11
+protobuf==3.20.1
+psycopg2==2.9.5
+pycparser==2.21
+PyMySQL==1.0.2
+requests==2.28.1
 SQLAlchemy==1.4.45
-Werkzeug==2.2.2
+sqlparse==0.4.3
+termcolor==2.1.1
+urllib3==1.26.13
+Werkzeug @ file:///C:/b/abs_17q5kgb8bo/croot/werkzeug_1671216014857/work
+wincertstore==0.2
 WTForms==3.0.1
+yarg==0.1.9
