@@ -24,30 +24,29 @@
 </br>
 
 <div class="card">
-    <div class="card-header">
-      <h1>User Dashboard</h1>
+  <div class="card-header" style="background-color: #f6f6ef;">
+    <h1>User Dashboard</h1>
     </div>
     <div class="card-body">
       <p class="card-text">
-        <div class='container'>
-          <div class='row'>
-            <div class='col-8'>
-              <strong>Name: </strong>{{user.name}}</br></br>
-              <strong>Username: </strong>{{user.username}}</br></br>
-              <strong>Email: </strong>{{user.email}}</br></br>
-              <strong>Date Joined: </strong>{{user.date_added}}</br></br>
-              <strong>About Author: </strong>{{user.about_author}}</br></br>
-            </div>
-            <div class="col-4">
-              {% if user.profile_pic %}
-                  <img src="{{url_for('static', filename='user_images/' + user.profile_pic)}}" align='right' width='50%' style="border-radius: 25px;">
-              {% else %}
-                  <img src="{{url_for('static', filename='user_images/reddit_default.png')}}" align='right' width='50%' style="border-radius: 25px;">
-              {% endif %}
-            </div>
+        <div class='row'>
+          <div class='col-8'>
+            <strong>Name: </strong>{{user.name}}</br></br>
+            <strong>Username: </strong>{{user.username}}</br></br>
+            <strong>Email: </strong>{{user.email}}</br></br>
+            <strong>Date Joined: </strong>{{user.date_added}}</br></br>
+            <strong>About Author: </strong>{{user.about_author}}</br></br>
+          </div>
+          <div class="col-4">
+            {% if user.profile_pic %}
+                <img src="{{url_for('static', filename='user_images/' + user.profile_pic)}}" align='right' width='50%' style="border-radius: 25px;">
+            {% else %}
+                <img src="{{url_for('static', filename='user_images/reddit_default.png')}}" align='right' width='50%' style="border-radius: 25px;">
+            {% endif %}
           </div>
         </div>
       </p>
     </div>
+    <h6 class="card-footer" style="text-align: center; background-color: #f6f6ef;"><i>This website is created by Minh T. Nguyen</i></h6>
   </div>
 {% endblock %}

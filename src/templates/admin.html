@@ -13,7 +13,7 @@
     </br>
     
     <div class="card">
-        <div class="card-header">
+        <div class="card-header" style="background-color: #f6f6ef;">
             <h1>Admin - Users Management</h1>
         </div>
         
@@ -26,10 +26,10 @@
             {% for user in users_list %}
         
                 <div class="col-sm-6 mb-3">
-                    <div class="card">
+                    <div class="card" style="background-color: #f6f6ef;">
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
+                                <li class="list-group-item" style="background-color: #f6f6ef;">
                                     <h5 class='card-title'>
                                         {% if user.id == current_user.id %}
                                             <a href="{{url_for('dashboard')}}">{{user.name}}</a></br> 
@@ -38,7 +38,7 @@
                                         {% endif %}
                                     </h5>  
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item" style="background-color: #f6f6ef;">
                                     <p class="card-text">- <b>ID:</b> {{user.id}}.</p>
                                     <p class="card-text">- <b>Date:</b> {{user.date_added}}.</p>
                                     <p class="card-text">- <b>Username:</b> {{user.username}}.</p>
@@ -56,6 +56,7 @@
             </div>
         
         </table>
+        <h6 class="card-footer" style="text-align: center; background-color: #f6f6ef;"><i>This website is created by Minh T. Nguyen</i></h6>
     </div>
 
 {% endblock %}

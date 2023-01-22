@@ -4,9 +4,9 @@
 
 {% block content %} 
 
-    <div style="text-align: center">
-        <img src="../../static/images/hacker_news_logo.jpeg" style="width: 50%" class="rounded">
-    </div>
+<div style="text-align: center">
+    <img src="../../static/images/y_combinator_logo.png" style="width: 5%" class="rounded">
+</div>
 
     </br>
 
@@ -21,26 +21,34 @@
     {% endfor %}
     </div>
 
-    <div class="shadow p-3 mb-5 bg-white rounded card">
+    <div class="card">
    
-        <h1>Edit Blog</h1>
+        <div class="card-header" style="background-color: #f6f6ef;">
+            <h1>Edit Blog</h1>
+        </div>
         <br/>
+        
+        <div class="card-body">
 
-        <form method="POST">
-            {{form.hidden_tag()}}
+            <form method="POST">
+                {{form.hidden_tag()}}
 
-            {{form.title.label(class="form-label")}}
-            {{form.title(class="form-control")}}
-            </br>
+                {{form.title.label(class="form-label")}}
+                {{form.title(class="form-control")}}
+                </br>
 
-            {{form.content.label(class="form-label")}}
-            {{form.content(class="form-control", rows="5")}}
-            </br>
+                {{form.content.label(class="form-label")}}
+                {{form.content(class="form-control", rows="5")}}
+                </br>
 
-            {{form.submit(class="btn btn-secondary")}}
-        </form>
+                {{form.submit(class="btn btn-primary")}}
+            </form>
 
-        {{ ckeditor.load() }}
-        {{ ckeditor.config(name='content')}}
+            {{ ckeditor.load() }}
+            {{ ckeditor.config(name='content')}}
+        </div>
+
+    <h6 class="card-footer" style="text-align: center; background-color: #f6f6ef;"><i>This website is created by Minh T. Nguyen</i></h6>
+    </div>
 
 {% endblock %}
