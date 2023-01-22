@@ -458,6 +458,7 @@ def create_comment(post_id):
 
     return redirect(url_for("view_all_posts"))
 
+
 # delete post
 @app.route("/delete-comment/<int:id>")
 @login_required
@@ -481,6 +482,7 @@ def delete_comment(id):
     else:
         flash("You aren't authorize to delete comment!")
         return redirect(url_for("view_all_posts"))
+
 
 #############################################
 # DATABASES
