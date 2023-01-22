@@ -456,7 +456,7 @@ def create_comment(post_id):
         else:
             flash("Error: Post does not exist!")
 
-    return redirect(url_for("view_all_posts"))
+    return redirect(url_for("view_post", id=post_id))
 
 
 # delete post
@@ -464,6 +464,7 @@ def create_comment(post_id):
 @login_required
 def delete_comment(id):
     comment_to_delete = Comment.query.get_or_404(id)
+    post_id = comment_to_delete.post_id
 
     # if the current login user id == the id of the blog's author's id
     if current_user.id == comment_to_delete.user.id or current_user.id == 3:
@@ -474,14 +475,14 @@ def delete_comment(id):
 
             flash("Comment deleted successfully!")
 
-            return redirect(url_for("view_all_posts"))
+            return redirect(url_for("view_post", id=post_id))
 
         except:
             flash("Error: Unable to delete comment. Try again.")
-            return redirect(url_for("view_all_posts"))
+            return redirect(url_for("view_post", id=post_id))
     else:
         flash("You aren't authorize to delete comment!")
-        return redirect(url_for("view_all_posts"))
+        return redirect(url_for("view_post", id=post_id))
 
 
 #############################################

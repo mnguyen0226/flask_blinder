@@ -3,6 +3,13 @@
 {% block title %}Post{% endblock %}
 
 {% block content %} 
+
+    <div style="text-align: center">
+        <img src="../static/images/y_combinator_logo.png" style="width: 5%" class="rounded">
+    </div>
+
+    </br>
+    
     <div>    
     {% for message in get_flashed_messages() %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -118,9 +125,8 @@
                                 <button type="submit" class="btn btn-primary">Comment</button>
                             </form>
                             
-                            <button type="button" class="btn btn-primary btn-sm"><a href="{{url_for('view_all_posts')}}" style="color: white">Back to Blogs</a></button>&nbsp
                             {% if current_user.id == 3 or post.poster_id == current_user.id %}
-                                <button type="button" class="btn btn-warning btn-sm"><a href="{{url_for('edit_post', id=post.id)}}" style="color: white">Edit Post</a></button>&nbsp
+                                <button type="button" class="btn btn-warning btn-sm"><a href="{{url_for('edit_post', id=post.id)}}" style="color: black">Edit Post</a></button>&nbsp
                                 <button type="button" class="btn btn-danger btn-sm"><a href="{{url_for('delete_post', id=post.id)}}" style="color: white">Delete Post</a></button>
                             {% endif %}    
 
