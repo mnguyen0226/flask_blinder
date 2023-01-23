@@ -15,18 +15,18 @@ Flask-Y means that the app is the redesigning version of Y Combinator's Hacker N
 Flask-Y is designed to be user friendly, similar to how Reddit design their user-friendly page. Here are the list of features from the client and admin side:
 
 Client (User) can:
-- Sign Up / Logout / Sign Out / Delete (their) account.
-- View / Upvote / Downvote / Create posts.
-- View other user's profile.
-- Comment on / Delete (their) comments or comments on their posts.
-- Edit Personal dashboard including personal info and images.
-- Search for posts.
-- Delete user will delete all info related to that user.
+- [Sign Up / Logout / Sign Out / Delete (their) account](https://drive.google.com/file/d/1VZXQNsctVqs6bY6i7bWxUSaZcMfhzpe-/view?usp=sharing).
+- [View / Upvote / Downvote / Create posts](https://drive.google.com/file/d/1lnuhxXBFmIAwjqAM2rtAZOQy9Vp4M5Wa/view?usp=sharing).
+- [View other user's profile](https://drive.google.com/file/d/1MtNb7Q6Y5EgdMOj0MW2Y2XZmridyNTok/view?usp=sharing).
+- [Comment on / Delete (their) comments or comments on their posts](https://drive.google.com/file/d/1ZR0bhqZOrHnKppoVQrykOgrKFSMssJdr/view?usp=sharing).
+- [Edit Personal dashboard including personal info and images](https://drive.google.com/file/d/1y9CmBSpNHAZE_lHqPTdrAepxGAXZAQHT/view?usp=sharing).
+- [Search for posts](https://drive.google.com/file/d/13f7mXUEFZgme9CMEzK5SSCrLsKh1C-AX/view?usp=sharing).
+- [Delete user will delete all info related to that user](https://drive.google.com/file/d/1ev3YW5h_r_8ym2flTFPyNzbRcW7q_bW2/view?usp=sharing).
 
 Admin can:
 - Do all Client's abilities.
-- Can Delete users / comments.
-- Can Delete / Edit posts.
+- [Can Delete users / comments](https://drive.google.com/file/d/1mu3d4rR9z9k-2zKVbEZGiz8R1nuTIlRL/view?usp=sharing).
+- [Can Delete / Edit posts](https://drive.google.com/file/d/1jNX7R922HVAohdix9zytc9r86Sx3cSCE/view?usp=sharing).
 
 ## How I built it
 
@@ -98,4 +98,5 @@ View User Page
 Admin Page
 ![](https://github.com/mnguyen0226/flask_y/blob/main/docs/admin_page.PNG)
 
-
+Customize Error Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/customized_error_page.PNG)
