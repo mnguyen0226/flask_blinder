@@ -11,7 +11,7 @@ Y Combinator is an awesome venture capital and I love their investment in start-
 
 Flask-Y means that the app is the redesigning version of Y Combinator's Hacker News using Flask.
 
-## What it does
+## Accomplished app features
 Flask-Y is designed to be user friendly, similar to how Reddit design their user-friendly page. Here are the list of features from the client and admin side:
 
 Client (User) can:
@@ -19,8 +19,9 @@ Client (User) can:
 - View / Upvote / Downvote / Create posts.
 - View other user's profile.
 - Comment on / Delete (their) comments or comments on their posts.
-- Edit Personal Page including personal info and images.
+- Edit Personal dashboard including personal info and images.
 - Search for posts.
+- Delete user will delete all info related to that user.
 
 Admin can:
 - Do all Client's abilities.
@@ -65,8 +66,27 @@ python ./src/create_db.py
 flask app.py
 ```
 
-## Accomplished App Features
+## Pages
 
+Home Page
+
+News Page
+
+Sign Up Page
+
+Login Page
+
+User Dashboard
+
+Create New Post Page
+
+View Post Page
+
+Search Page
+
+View User Page
+
+Admin Page
 
 
 
