@@ -13,15 +13,17 @@ Flask-Y means that the app is the redesigning version of Y Combinator's Hacker N
 
 ## What it does
 Flask-Y is designed to be user friendly, similar to how Reddit design their user-friendly page. Here are the list of features from the client and admin side:
-- Client (User) can:
-    - Sign Up / Logout / Sign Out / Delete (their) account.
-    - View / Upvote / Downvote / Create posts.
-    - View other user's profile.
-    - Comment on / Delete (their) comments or comments on their posts.
-    - Edit Personal Page including personal info and images.
-- Admin can:
-    - Do all Client's abilities.
-    - Can Delete users / posts / comment.
+
+Client (User) can:
+- Sign Up / Logout / Sign Out / Delete (their) account.
+- View / Upvote / Downvote / Create posts.
+- View other user's profile.
+- Comment on / Delete (their) comments or comments on their posts.
+- Edit Personal Page including personal info and images.
+
+Admin can:
+- Do all Client's abilities.
+- Can Delete users / posts / comment.
 
 ## How I built it
 
@@ -39,12 +41,27 @@ Implement one-to-many relationship in database.
 
 Posts voting and ranking features.
 
-Follow the 4 principles in web design: Contrast, Repetition, Alignment, Proximity from ["The Non-Designer's Design Book"](https://www.amazon.com/Williams-Non-Designers-Design-Bk_p3-Designers/dp/0321534042).
-
 Upload avatar from local feature and save to database.
 
-## Getting start
+Follow the 4 principles in web design: Contrast, Repetition, Alignment, Proximity from ["The Non-Designer's Design Book"](https://www.amazon.com/Williams-Non-Designers-Design-Bk_p3-Designers/dp/0321534042).
 
+## Getting start
+1. Install MySQL and create a MySQL Connection to local root. Unlike SQLite, You won't have access to my database.
+
+2. Environmental Setup
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+3. Connect and create database
+```bash
+python ./src/create_db.py
+```
+
+4. Run
+```bash
+flask app.py
+```
 
 ## Accomplished App Features
 
