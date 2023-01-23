@@ -1,4 +1,4 @@
-# Flask_Y - Redesign Y Combinator's Hacker News with Flask (Reddit Style)
+# Flask_Y - Hacker News v2.0
 
 Redesigned Hacker News
 ![](https://github.com/mnguyen0226/flask_y/blob/main/docs/hacker_new_redesign.PNG)
@@ -14,6 +14,8 @@ Original Hacker News
 Show features here
 
 ## How I built it
+
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/MVC_model.png)
 
 # MVC Three Tier Architecture
 
