@@ -69,24 +69,33 @@ flask app.py
 ## Pages
 
 Home Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/home_page.PNG)
 
 News Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/new_page.PNG)
 
 Sign Up Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/sign_up_page.PNG)
 
 Login Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/login_page.PNG)
 
 User Dashboard
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/dashboard_page.PNG)
 
 Create New Post Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/create_post_page.PNG)
 
 View Post Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/view_post_page.PNG)
 
 Search Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/search_page.PNG)
 
 View User Page
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/view_user_page.PNG)
 
 Admin Page
-
+![](https://github.com/mnguyen0226/flask_y/blob/main/docs/admin_page.PNG)
 
 
