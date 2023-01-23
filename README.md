@@ -33,7 +33,7 @@ Admin can:
 ![](https://github.com/mnguyen0226/flask_y/blob/main/docs/MVC_model.png)
 
 This project has been built with a lot of consideration for better user experience and Python, using:
-- Flask.
+- Flask API.
 - Bootstrap Component.
 - CkEditor API (rich text).
 - Werkzeug API (password hashed).
