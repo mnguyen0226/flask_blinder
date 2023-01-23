@@ -20,10 +20,12 @@ Client (User) can:
 - View other user's profile.
 - Comment on / Delete (their) comments or comments on their posts.
 - Edit Personal Page including personal info and images.
+- Search for posts.
 
 Admin can:
 - Do all Client's abilities.
-- Can Delete users / posts / comment.
+- Can Delete users / comments.
+- Can Delete / Edit posts.
 
 ## How I built it
 
