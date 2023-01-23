@@ -98,5 +98,5 @@ View User Page
 Admin Page
 ![](https://github.com/mnguyen0226/flask_y/blob/main/docs/admin_page.PNG)
 
-Customize Error Page
+Customized Error Page
 ![](https://github.com/mnguyen0226/flask_y/blob/main/docs/customized_error_page.PNG)
