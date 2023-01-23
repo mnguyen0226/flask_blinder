@@ -37,7 +37,6 @@
             <strong>Date Joined: </strong>{{current_user.date_added}}</br></br>
             <strong>About Author: </strong>{{current_user.about_author}}</br></br>
             <div>
-              <a href="{{url_for('logout')}}" class="btn btn-primary">Logout</a>&nbsp
               <a href="{{url_for('delete', id=current_user.id)}}" class="btn btn-danger" >Delete Account</a>
             </div>
           </div>
